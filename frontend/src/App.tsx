@@ -10,6 +10,7 @@ import Khata from "./pages/dashboard/Khata";
 import CustomerDetail from "./pages/dashboard/CustomerDetail";
 
 export const serverUrl = "http://localhost:5000";
+// export const serverUrl = "https://smart-khata-omega.vercel.app";
 
 import useGetUser from "./hooks/useGetUser";
 import { useSelector } from "react-redux";
