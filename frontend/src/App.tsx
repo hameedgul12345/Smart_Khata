@@ -12,12 +12,14 @@ import CustomerDetail from "./pages/dashboard/CustomerDetail";
 export const serverUrl = "http://localhost:5000";
 // export const serverUrl = "https://smart-khata-omega.vercel.app";
 
-import useGetUser from "./hooks/useGetUser";
-import { useSelector } from "react-redux";
+import useGetUser from "./hooks/useGetUser"; 
+import { useAppSelector } from "./redux/hooks";
 
 function App() {
   const { loading } = useGetUser();   // fetch user from backend
-  const { user } = useSelector((state) => state.user);
+ 
+
+const { user } = useAppSelector((state) => state.user);
 
   if (loading) return <div>Loading...</div>;
 
