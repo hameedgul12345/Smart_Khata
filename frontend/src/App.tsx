@@ -10,8 +10,8 @@ import { useAppSelector } from "./redux/hooks";
 import type { RootState } from "./redux/store";
 import CustomerDetail from "./pages/dashboard/CustomerDetail";
 
-export const serverUrl = "http://localhost:5000";
-// export const serverUrl = "https://smart-khata-omega.vercel.app";
+// export const serverUrl = "http://localhost:5000";
+export const serverUrl = "https://smart-khata-omega.vercel.app";
 
 import useGetUser from "./hooks/useGetUser"; 
 

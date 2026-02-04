@@ -28,11 +28,19 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser
 app.use(cookieParser());
 
-// CORS
-app.use(cors({
-  origin: "http://localhost:5173", // or your frontend URL
-  credentials: true
-}));
+
+// ✅ Middleware: CORS configuration
+app.use(
+  cors({
+    origin: [
+      "https://smartkhatasystem.netlify.app",
+      "http://localhost:5173", // ✅ keep this for local dev
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 
 // Static folder (for uploads, public files)
