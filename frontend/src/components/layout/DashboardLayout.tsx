@@ -4,50 +4,67 @@ import {
   Users,
   Package,
   BookOpen,
-  LogOut
+  LogOut,
 } from "lucide-react";
+import type { ReactNode } from "react";
 
-const DashboardLayout = ({ children }) => {
+
+interface DashboardLayoutProps {
+  children: ReactNode;
+}
+
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="flex min-h-screen bg-slate-100">
 
       {/* Sidebar */}
       <aside className="w-64 bg-gradient-to-b from-teal-600 to-cyan-700 text-white hidden md:flex flex-col">
-
         <div className="p-6 text-2xl font-bold border-b border-white/20">
           💼 Khata System
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
-          <NavLink to="/dashboard" className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-              isActive ? "bg-white/20" : "hover:bg-white/10"
-            }`
-          }>
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                isActive ? "bg-white/20" : "hover:bg-white/10"
+              }`
+            }
+          >
             <LayoutDashboard size={20} /> Dashboard
           </NavLink>
 
-          <NavLink to="/dashboard/customers" className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-              isActive ? "bg-white/20" : "hover:bg-white/10"
-            }`
-          }>
+          <NavLink
+            to="/dashboard/customers"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                isActive ? "bg-white/20" : "hover:bg-white/10"
+              }`
+            }
+          >
             <Users size={20} /> Customers
           </NavLink>
 
-          <NavLink to="/dashboard/products" className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-              isActive ? "bg-white/20" : "hover:bg-white/10"
-            }`
-          }>
+          <NavLink
+            to="/dashboard/products"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                isActive ? "bg-white/20" : "hover:bg-white/10"
+              }`
+            }
+          >
             <Package size={20} /> Products
           </NavLink>
 
-          <NavLink to="/dashboard/khata" className={({ isActive }) =>
-            `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-              isActive ? "bg-white/20" : "hover:bg-white/10"
-            }`
-          }>
+          <NavLink
+            to="/dashboard/khata"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                isActive ? "bg-white/20" : "hover:bg-white/10"
+              }`
+            }
+          >
             <BookOpen size={20} /> Khata
           </NavLink>
         </nav>
@@ -58,7 +75,6 @@ const DashboardLayout = ({ children }) => {
             <LogOut size={20} /> Logout
           </button>
         </div>
-
       </aside>
 
       {/* Main Content */}
@@ -78,7 +94,6 @@ const DashboardLayout = ({ children }) => {
         <main className="p-6 flex-1">
           {children}
         </main>
-
       </div>
     </div>
   );
