@@ -1,4 +1,4 @@
-import React, {type FC } from "react";
+import { type FC } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 
 /* ================= TYPES ================= */
@@ -7,6 +7,7 @@ interface StatCardProps {
   value: string | number;
 }
 
+/* ================= DASHBOARD PAGE ================= */
 const Dashboard: FC = () => {
   return (
     <DashboardLayout>

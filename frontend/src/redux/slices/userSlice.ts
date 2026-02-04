@@ -1,20 +1,33 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice,type PayloadAction } from "@reduxjs/toolkit";
 
-const initialState={
-    user:null,
-
+/* ================= TYPES ================= */
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  // add other fields returned by your API
 }
 
-const userSlice =createSlice({
-    name:"user",
-    initialState,
-    reducers:{
-        setUser:(state,action)=>{
-            state.user=action.payload;
-        }   
-    }
-})
+interface UserState {
+  user: User | null;
+}
 
-export const {setUser}=userSlice.actions;
+/* ================= INITIAL STATE ================= */
+const initialState: UserState = {
+  user: null,
+};
+
+/* ================= SLICE ================= */
+const userSlice = createSlice({
+  name: "user",
+  initialState,
+  reducers: {
+    setUser: (state, action: PayloadAction<User | null>) => {
+      state.user = action.payload;
+    },
+  },
+});
+
+export const { setUser } = userSlice.actions;
 
 export default userSlice.reducer;
