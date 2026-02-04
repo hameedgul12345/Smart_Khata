@@ -5,8 +5,7 @@ import Signup from "./pages/auth/Signup";
 import Signin from "./pages/auth/Signin";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Customers from "./pages/dashboard/Customers";
-import Products from "./pages/dashboard/Products";
-import Khata from "./pages/dashboard/Khata";
+
 import CustomerDetail from "./pages/dashboard/CustomerDetail";
 
 export const serverUrl = "http://localhost:5000";
@@ -47,16 +46,6 @@ const { user } = useAppSelector((state) => state.user);
         <Route
           path="/dashboard/customers"
           element={user ? <Customers /> : <Navigate to="/signin" replace />}
-        />
-
-        <Route
-          path="/dashboard/products"
-          element={user ? <Products /> : <Navigate to="/signin" replace />}
-        />
-
-        <Route
-          path="/dashboard/khata"
-          element={user ? <Khata /> : <Navigate to="/signin" replace />}
         />
 
         <Route
