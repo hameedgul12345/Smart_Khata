@@ -6,19 +6,22 @@ import Signin from "./pages/auth/Signin";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Customers from "./pages/dashboard/Customers";
 
+import { useAppSelector } from "./redux/hooks";
+import type { RootState } from "./redux/store";
 import CustomerDetail from "./pages/dashboard/CustomerDetail";
 
 export const serverUrl = "http://localhost:5000";
 // export const serverUrl = "https://smart-khata-omega.vercel.app";
 
 import useGetUser from "./hooks/useGetUser"; 
-import { useAppSelector } from "./redux/hooks";
+
 
 function App() {
   const { loading } = useGetUser();   // fetch user from backend
  
 
-const { user } = useAppSelector((state) => state.user);
+const user = useAppSelector((state: RootState) => state.user.user);
+
 
   if (loading) return <div>Loading...</div>;
 

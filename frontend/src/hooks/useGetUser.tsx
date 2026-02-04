@@ -3,6 +3,8 @@ import axios, { AxiosError } from "axios";
 import { serverUrl } from "../App";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setUser } from "../redux/slices/userSlice";
+ 
+import type { RootState } from "../redux/store";
 
 interface User {
   _id: string;
@@ -11,7 +13,9 @@ interface User {
 }
 
 function useGetUser(): { user: User | null; loading: boolean; error: string | null } {
-  const user = useAppSelector((state) => state.user.user);
+
+const user = useAppSelector((state: RootState) => state.user.user);
+
   const dispatch = useAppDispatch();
 
   const [loading, setLoading] = useState(!user);
