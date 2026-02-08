@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import axios from "axios";
 import { serverUrl } from "../../App";
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
+import { div } from "framer-motion/client";
 
 /* ================= TYPES ================= */
 interface LedgerEntry {
@@ -36,7 +39,7 @@ function CustomerDetail() {
       try {
         const res = await axios.get<{ customer: Customer }>(
           `${serverUrl}/api/customers/${id}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
         setCustomer(res.data.customer);
       } catch (error) {
@@ -52,7 +55,7 @@ function CustomerDetail() {
       try {
         const res = await axios.get<{ products: LedgerEntry[] }>(
           `${serverUrl}/api/products/product/${id}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
         setLedger(res.data.products || []);
       } catch (error) {
@@ -70,13 +73,13 @@ function CustomerDetail() {
       const res = await axios.post<{ product: LedgerEntry }>(
         `${serverUrl}/api/products/add-product`,
         { customerId: id, productName, price: Number(price) },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       setLedger((prev) => [...prev, res.data.product]);
 
       setCustomer((prev) =>
-        prev ? { ...prev, totalDue: prev.totalDue + Number(price) } : prev
+        prev ? { ...prev, totalDue: prev.totalDue + Number(price) } : prev,
       );
 
       setProductName("");
@@ -97,7 +100,7 @@ function CustomerDetail() {
 
       setLedger((prev) => prev.filter((e) => e._id !== entryId));
       setCustomer((prev) =>
-        prev ? { ...prev, totalDue: prev.totalDue - entryPrice } : prev
+        prev ? { ...prev, totalDue: prev.totalDue - entryPrice } : prev,
       );
     } catch (error) {
       console.error("Failed to delete product:", error);
@@ -116,11 +119,13 @@ function CustomerDetail() {
       await axios.put(
         `${serverUrl}/api/customers/update-due`,
         { customerId: id, amount: Number(paymentAmount) },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       setCustomer((prev) =>
-        prev ? { ...prev, totalDue: prev.totalDue - Number(paymentAmount) } : prev
+        prev
+          ? { ...prev, totalDue: prev.totalDue - Number(paymentAmount) }
+          : prev,
       );
 
       setPaymentAmount("");
@@ -155,6 +160,59 @@ function CustomerDetail() {
     );
   }
 
+  const generateInvoice = () => {
+    if (!customer || ledger.length === 0) return;
+    // alert("hello")
+
+    const doc = new jsPDF();
+
+    // ---------------- Header ----------------
+    doc.setFontSize(18);
+    doc.text("INVOICE", 14, 20);
+
+    doc.setFontSize(11);
+    doc.text(`Customer Name: ${customer.name}`, 14, 30);
+    if (customer.phone) {
+      doc.text(`Phone: ${customer.phone}`, 14, 36);
+    }
+
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 30);
+
+    // ---------------- Table ----------------
+    const tableData = ledger.map((item, index) => [
+      index + 1,
+      new Date(item.createdAt).toLocaleDateString(),
+      item.name,
+      `Rs ${item.price}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 45,
+      head: [["#", "Date", "Product", "Price"]],
+      body: tableData,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [22, 160, 133] }, // teal
+      columnStyles: {
+        0: { cellWidth: 10 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 90 },
+        3: { cellWidth: 30, halign: "right" },
+      },
+    });
+
+    // ---------------- Total ----------------
+    const finalY = (doc as any).lastAutoTable.finalY || 60;
+    doc.setFontSize(12);
+    doc.text(`Total Due: Rs ${customer.totalDue}`, 14, finalY + 10);
+
+    // ---------------- Footer ----------------
+    doc.setFontSize(10);
+    doc.text("Thank you for your business", 14, finalY + 20);
+
+    // ---------------- Save ----------------
+    doc.save(`${customer.name}-invoice.pdf`);
+  };
+
   return (
     <DashboardLayout>
       {/* ================= CUSTOMER INFO ================= */}
@@ -165,7 +223,7 @@ function CustomerDetail() {
         </div>
 
         <div className="flex flex-col items-center gap-5">
-          <div
+          {/* <div
             className={`px-6 py-2 rounded-full text-sm font-semibold shadow-sm ${
               customer.totalDue > 0
                 ? "bg-red-50 text-red-600 border border-red-200"
@@ -173,11 +231,14 @@ function CustomerDetail() {
             }`}
           >
             Total Due: <span className="font-bold">Rs {customer.totalDue}</span>
-          </div>
+          </div> */}
 
           {ledger.length > 0 && (
-            <button className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 active:scale-95 transition-all">
-              Download PDF
+            <button
+              onClick={generateInvoice}
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 active:scale-95 transition-all"
+            >
+              📄 Download Invoice
             </button>
           )}
         </div>
@@ -198,13 +259,16 @@ function CustomerDetail() {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
-        <button onClick={addEntry} className="bg-teal-600 text-white px-6 rounded">
+        <button
+          onClick={addEntry}
+          className="bg-teal-600 text-white px-6 rounded"
+        >
           Add
         </button>
       </div>
 
       {/* ================= PAYMENT BOX ================= */}
-      {dueBoxOpen && (
+      {dueBoxOpen ? (
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 flex gap-3 items-center">
           <input
             type="number"
@@ -213,12 +277,32 @@ function CustomerDetail() {
             onChange={(e) => setPaymentAmount(e.target.value)}
             className="border p-2 rounded w-48"
           />
-          <button onClick={receivePayment} className="bg-blue-600 text-white px-6 py-2 rounded">
+          <button
+            onClick={receivePayment}
+            className="bg-blue-600 text-white px-6 py-2 rounded"
+          >
             Receive
           </button>
-          <button onClick={() => setDueBoxOpen(false)} className="text-sm text-gray-500">
+          <button
+            onClick={() => setDueBoxOpen(false)}
+            className="text-sm text-gray-500"
+          >
             Cancel
           </button>
+        </div>
+      ) : (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 flex justify-end gap-3 items-center">
+        <button 
+          onClick={() => setDueBoxOpen(true)}
+          disabled={customer.totalDue <= 0}
+          className={`mt-2 px-4 py-2 rounded text-sm ${
+            customer.totalDue > 0
+              ? "bg-blue-600 text-white"
+              : "bg-gray-300 text-gray-500"
+          }`}
+        >
+          Take Payment
+        </button>
         </div>
       )}
 
@@ -226,30 +310,23 @@ function CustomerDetail() {
       <div className="bg-white rounded-xl shadow overflow-hidden">
         {ledger.length === 0 ? (
           <>
-            <div className="p-10 text-center text-gray-400">No ledger entries</div>
+            <div className="p-10 text-center text-gray-400">
+              No ledger entries
+            </div>
 
             <div className="border-t p-4 flex justify-between items-center">
               <h3 className="font-semibold text-lg">Total Due</h3>
               <div className="text-right">
                 <p className="text-2xl font-bold">Rs {customer.totalDue}</p>
-                <button
-                  onClick={() => setDueBoxOpen(true)}
-                  disabled={customer.totalDue <= 0}
-                  className={`mt-2 px-4 py-2 rounded text-sm ${
-                    customer.totalDue > 0
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-300 text-gray-500"
-                  }`}
-                >
-                  Take Payment
-                </button>
               </div>
             </div>
           </>
         ) : (
           <>
             <div className="flex justify-between items-center px-4 py-3 border-b bg-slate-50">
-              <h3 className="text-lg font-semibold text-gray-700">Products Ledger</h3>
+              <h3 className="text-lg font-semibold text-gray-700">
+                Products Ledger
+              </h3>
               <button
                 onClick={clearAll}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 hover:border-red-300 active:scale-95 transition-all"
@@ -270,9 +347,13 @@ function CustomerDetail() {
               <tbody>
                 {ledger.map((entry) => (
                   <tr key={entry._id} className="border-t">
-                    <td className="p-4 text-sm">{new Date(entry.createdAt).toLocaleDateString()}</td>
+                    <td className="p-4 text-sm">
+                      {new Date(entry.createdAt).toLocaleDateString()}
+                    </td>
                     <td className="p-4">{entry.name}</td>
-                    <td className="p-4 text-center font-semibold text-red-600">Rs {entry.price}</td>
+                    <td className="p-4 text-center font-semibold text-red-600">
+                      Rs {entry.price}
+                    </td>
                     <td className="p-4 text-center">
                       <button
                         onClick={() => deleteEntry(entry._id, entry.price)}
@@ -290,17 +371,7 @@ function CustomerDetail() {
               <h3 className="font-semibold text-lg">Total Due</h3>
               <div className="text-right">
                 <p className="text-2xl font-bold">Rs {customer.totalDue}</p>
-                <button
-                  onClick={() => setDueBoxOpen(true)}
-                  disabled={customer.totalDue <= 0}
-                  className={`mt-2 px-4 py-2 rounded text-sm ${
-                    customer.totalDue > 0
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-300 text-gray-500"
-                  }`}
-                >
-                  Take Payment
-                </button>
+              
               </div>
             </div>
           </>

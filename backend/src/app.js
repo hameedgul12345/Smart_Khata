@@ -33,7 +33,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [
-      "https://smartkhatasystem.netlify.app",
+      // "https://smartkhatasystem.netlify.app",
       "http://localhost:5173", // ✅ keep this for local dev
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

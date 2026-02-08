@@ -15,7 +15,7 @@ interface User {
 function useGetUser(): { user: User | null; loading: boolean; error: string | null } {
 
 const user = useAppSelector((state: RootState) => state.user.user);
-
+  // console.log("user Profile",user)
   const dispatch = useAppDispatch();
 
   const [loading, setLoading] = useState(!user);

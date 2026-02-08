@@ -300,7 +300,7 @@ const Customers = () => {
                 Rs {c.totalDue}
               </p>
 
-              <button
+              {/* <button
                 onClick={(e) => {
                   e.stopPropagation();
                   deleteCustomer(c._id);
@@ -308,7 +308,7 @@ const Customers = () => {
                 className="text-sm text-red-600 hover:underline mt-1"
               >
                 Delete
-              </button>
+              </button> */}
             </div>
           </div>
         ))}

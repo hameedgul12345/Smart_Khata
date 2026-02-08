@@ -7,6 +7,8 @@ import {
   LogOut,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import type { RootState } from "../../redux/store";
+import { useAppSelector } from "../../redux/hooks";
 
 
 interface DashboardLayoutProps {
@@ -14,6 +16,9 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  
+  const user = useAppSelector((state: RootState) => state.user.user);
+    console.log("user Profile",user)  
   return (
     <div className="flex min-h-screen bg-slate-100">
 
@@ -35,6 +40,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <LayoutDashboard size={20} /> Dashboard
           </NavLink>
 
+
+          <NavLink
+            to="/dashboard/products"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                isActive ? "bg-white/20" : "hover:bg-white/10"
+              }`
+            }
+          >
+            <Package size={20} /> Items
+          </NavLink>
+
+
+
           <NavLink
             to="/dashboard/customers"
             className={({ isActive }) =>
@@ -46,26 +65,31 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <Users size={20} /> Customers
           </NavLink>
 
+          
           <NavLink
-            to="/dashboard/products"
+            to="/dashboard/suppliers"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
                 isActive ? "bg-white/20" : "hover:bg-white/10"
               }`
             }
           >
-            <Package size={20} /> Products
+            <BookOpen size={20} /> Suppliers
           </NavLink>
 
+
+
+
           <NavLink
-            to="/dashboard/khata"
+            to="/dashboard/profile"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
                 isActive ? "bg-white/20" : "hover:bg-white/10"
               }`
             }
           >
-            <BookOpen size={20} /> Khata
+            {/* <BookOpen size={20} /> Khata */}
+            <Users size={20}/>Profile
           </NavLink>
         </nav>
 
@@ -85,7 +109,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <h1 className="text-xl font-semibold text-gray-700">Dashboard</h1>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">
-              H
+              <img src={user?.profilePicture || `https://ui-avatars.com/api/?name=${user?.name}`} alt="Profile" className="w-full h-full rounded-full object-cover" />
             </div>
           </div>
         </header>

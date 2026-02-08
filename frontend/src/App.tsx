@@ -5,15 +5,15 @@ import Signup from "./pages/auth/Signup";
 import Signin from "./pages/auth/Signin";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Customers from "./pages/dashboard/Customers";
-
 import { useAppSelector } from "./redux/hooks";
 import type { RootState } from "./redux/store";
 import CustomerDetail from "./pages/dashboard/CustomerDetail";
-
-// export const serverUrl = "http://localhost:5000";
-export const serverUrl = "https://smart-khata-omega.vercel.app";
+import Profile from "./pages/dashboard/Profile";
+export const serverUrl = "http://localhost:5000";
+// export const serverUrl = "https://smart-khata-omega.vercel.app" ;
 
 import useGetUser from "./hooks/useGetUser"; 
+
 
 
 function App() {
@@ -23,7 +23,7 @@ function App() {
 const user = useAppSelector((state: RootState) => state.user.user);
 
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="mx-auto">Loading...</div>;
 
   return (
     <BrowserRouter>
@@ -49,6 +49,17 @@ const user = useAppSelector((state: RootState) => state.user.user);
         <Route
           path="/dashboard/customers"
           element={user ? <Customers /> : <Navigate to="/signin" replace />}
+        />
+
+
+         <Route
+          path="/dashboard/customers"
+          element={user ? <Customers /> : <Navigate to="/signin" replace />}
+        />
+
+         <Route
+          path="/dashboard/profile"
+          element={user ? <Profile /> : <Navigate to="/signin" replace />}
         />
 
         <Route
