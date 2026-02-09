@@ -109,7 +109,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <h1 className="text-xl font-semibold text-gray-700">Dashboard</h1>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">
-              <img src={user?.profilePicture || `https://ui-avatars.com/api/?name=${user?.name}`} alt="Profile" className="w-full h-full rounded-full object-cover" />
+              <img src={`https://ui-avatars.com/api/?name=${user?.name}`} alt="Profile" className="w-full h-full rounded-full object-cover" />
             </div>
           </div>
         </header>

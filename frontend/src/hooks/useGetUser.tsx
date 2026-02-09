@@ -10,6 +10,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
+  profilePicture?: string;
 }
 
 function useGetUser(): { user: User | null; loading: boolean; error: string | null } {
