@@ -13,7 +13,6 @@ import mongoose from "mongoose";
 
 // export default mongoose.model("Product", productSchema);
 
-import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {

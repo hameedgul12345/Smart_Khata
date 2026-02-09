@@ -10,7 +10,7 @@ import type { RootState } from "./redux/store";
 import CustomerDetail from "./pages/dashboard/CustomerDetail";
 import Profile from "./pages/dashboard/Profile";
 // export const serverUrl = "http://localhost:5000";
-export const serverUrl = "https://smartkhatasystem.netlify.app";
+export const serverUrl = "https://smart-khata-omega.vercel.app" ;
 
 import useGetUser from "./hooks/useGetUser"; 
 
