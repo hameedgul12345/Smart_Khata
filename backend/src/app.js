@@ -29,20 +29,42 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ✅ Middleware: CORS configuration
-app.use(
-  cors({
-    origin: [
-      "https://smartkhatasystem.netlify.app",
-      "http://localhost:5173", // ✅ keep this for local dev
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: [
+//       "https://smartkhatasystem.netlify.app",
+//       "http://localhost:5173", // ✅ keep this for local dev
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   })
+// );
 
-// ✅ REQUIRED FOR VERCEL
-app.options("*", cors());
+
+// Universal CORS handler for all requests
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://smartkhatasystem.netlify.app"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,DELETE,OPTIONS"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  // Handle preflight
+  if (req.method === "OPTIONS") return res.sendStatus(200);
+
+  next();
+});
+
+
 
 // Static folder (for uploads, public files)
 app.use("/public", express.static("public"));
