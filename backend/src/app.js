@@ -7,7 +7,7 @@ import customerRoutes from "./routes/customerRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import connectDB from "./config/db.js";
-
+import itemRoutes from "./routes/itemRoutes.js";
 // Load env variables
 dotenv.config();
 
@@ -28,7 +28,6 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser
 app.use(cookieParser());
 
-
 // ✅ Middleware: CORS configuration
 app.use(
   cors({
@@ -41,7 +40,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 // Static folder (for uploads, public files)
 app.use("/public", express.static("public"));
@@ -57,6 +55,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
+app.use('/api/items', itemRoutes);
 
 /* ================== ERROR HANDLING ================== */
 

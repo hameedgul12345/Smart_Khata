@@ -193,6 +193,7 @@ const Customers = () => {
           { withCredentials: true }
         );
         dispatch(setCustomers(res.data.customers));
+        console.log(res.data.customers)
       } catch (error) {
         console.error("Failed to fetch customers:", error);
       }

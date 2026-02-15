@@ -31,6 +31,7 @@ const decreaseDue = async (req, res) => {
 
     // Subtract payment from totalDue
     customer.totalDue = Number(customer.totalDue || 0) - Number(amount);
+    customer.amountPaid = (customer.amountPaid || 0) + Number(amount); // Update amount paid
 
     // Never allow negative due
     if (customer.totalDue < 0) customer.totalDue = 0;

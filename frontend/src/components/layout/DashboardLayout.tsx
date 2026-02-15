@@ -18,12 +18,12 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   
   const user = useAppSelector((state: RootState) => state.user.user);
-    console.log("user Profile",user)  
+    // console.log("user Profile",user)  
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen  bg-slate-100">
 
       {/* Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-teal-600 to-cyan-700 text-white hidden md:flex flex-col">
+      <aside className="w-64  bg-gradient-to-b from-teal-600 to-cyan-700 text-white hidden md:flex flex-col">
         <div className="p-6 text-2xl font-bold border-b border-white/20">
           💼 Khata System
         </div>
@@ -42,7 +42,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
 
           <NavLink
-            to="/dashboard/products"
+            to="/dashboard/items"
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg transition ${
                 isActive ? "bg-white/20" : "hover:bg-white/10"

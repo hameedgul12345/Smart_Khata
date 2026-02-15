@@ -4,7 +4,7 @@ import getAllCustomers from '../controllers/customerControllers/getAllCustomers.
 import getCustomer from '../controllers/customerControllers/getCustomer.js';
 import decreaseDue from '../controllers/customerControllers/decreaseDue.js';
 import isAuthenticated from '../middlewares/isAuthenticated.js';
-
+import addItems from '../controllers/customerControllers/addItems.js';
 const router = express.Router();
 
 // Static routes first
@@ -13,5 +13,6 @@ router.get('/get-all-customers', isAuthenticated, getAllCustomers);
 router.put('/update-due', isAuthenticated, decreaseDue); // ✅ PUT route
 // Dynamic route last
 router.get('/:id', isAuthenticated, getCustomer);
+router.post('/add-items-to/:id', isAuthenticated, addItems);
 
 export default router;
