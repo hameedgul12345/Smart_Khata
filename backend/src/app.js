@@ -41,6 +41,9 @@ app.use(
   })
 );
 
+// ✅ REQUIRED FOR VERCEL
+app.options("*", cors());
+
 // Static folder (for uploads, public files)
 app.use("/public", express.static("public"));
 
