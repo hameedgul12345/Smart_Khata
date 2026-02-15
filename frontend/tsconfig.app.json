@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
     "useDefineForClassFields": true,
@@ -16,6 +17,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* ✅ REQUIRED FOR NETLIFY */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -26,7 +33,6 @@
   },
   "include": ["src"]
 }
-
 
 // {
 //   "compilerOptions": {

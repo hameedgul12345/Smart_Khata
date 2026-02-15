@@ -5,7 +5,6 @@ import { serverUrl } from "../../App";
 import { useAppDispatch } from "../../redux/hooks";
 import { setItems } from "../../redux/slices/itemsSlice";
 
-import { Button } from "../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +32,7 @@ interface Product {
 /* ================= ITEMS COMPONENT ================= */
 const Items = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  console.log("products",products)
+  console.log("products", products);
   const [search, setSearch] = useState("");
   const dispatch = useAppDispatch();
   // Form state
@@ -78,7 +77,7 @@ const Items = () => {
     try {
       if (editingId) {
         // Update existing item
-        console.log(editingId)
+        console.log(editingId);
         const res = await axios.put<{ item: Product }>(
           `${serverUrl}/api/items/update-item/${editingId}`,
           productData,
@@ -242,77 +241,79 @@ const Items = () => {
               No products found
             </p>
           )}
-       
-{filteredProducts.map((p) => (
-  <div
-    key={p._id}
-    className={`relative p-5 rounded-xl shadow-md border transition hover:shadow-lg ${
-      p.stockStatus === "OUT_OF_STOCK"
-        ? "bg-red-50 border-red-200"
-        : "bg-white border-gray-200"
-    }`}
-  >
-    {/* PRODUCT NAME */}
-    <h4 className="text-xl font-bold text-gray-800 mb-3">{p.name}</h4>
 
-    {/* PRODUCT DETAILS */}
-    <div className="space-y-1 text-sm text-gray-600 mb-10">
-      <p>
-        <span className="font-semibold text-gray-700">Price:</span> ${p.price}
-      </p>
-      <p>
-        <span className="font-semibold text-gray-700">Quantity:</span> {p.quantity}
-      </p>
-      <p>
-        <span className="font-semibold text-gray-700">Total:</span>{" "}
-        <span className="text-[#1A9899] font-bold">${p.totalPrice}</span>
-      </p>
-    </div>
+          {filteredProducts.map((p) => (
+            <div
+              key={p._id}
+              className={`relative p-5 rounded-xl shadow-md border transition hover:shadow-lg ${
+                p.stockStatus === "OUT_OF_STOCK"
+                  ? "bg-red-50 border-red-200"
+                  : "bg-white border-gray-200"
+              }`}
+            >
+              {/* PRODUCT NAME */}
+              <h4 className="text-xl font-bold text-gray-800 mb-3">{p.name}</h4>
 
-    {/* STATUS BADGE + DOTS */}
-    <div className=" flex flex-row justify-between items-center gap-1">
-      {/* STATUS BADGE (smaller) */}
-      <span
-        className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-          p.stockStatus === "OUT_OF_STOCK"
-            ? "bg-red-500 text-white"
-            : "bg-[#1A9899] text-white"
-        }`}
-      >
-        {p.stockStatus}
-      </span>
+              {/* PRODUCT DETAILS */}
+              <div className="space-y-1 text-sm text-gray-600 mb-10">
+                <p>
+                  <span className="font-semibold text-gray-700">Price:</span> $
+                  {p.price}
+                </p>
+                <p>
+                  <span className="font-semibold text-gray-700">Quantity:</span>{" "}
+                  {p.quantity}
+                </p>
+                <p>
+                  <span className="font-semibold text-gray-700">Total:</span>{" "}
+                  <span className="text-[#1A9899] font-bold">
+                    ${p.totalPrice}
+                  </span>
+                </p>
+              </div>
 
-      {/* DOTS / ACTION MENU (smaller button) */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="p-1">
-            <MoreVertical size={16} />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuGroup>
-            <div className="flex flex-col gap-1 justify-center">
-              <button
-                onClick={() => handleEdit(p._id)}
-                className="text-sm text-gray-700 px-2 py-1 rounded hover:bg-gray-100 transition"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(p._id)}
-                className="text-sm text-gray-700 px-2 py-1 rounded hover:bg-gray-100 transition"
-              >
-                Delete
-              </button>
+              {/* STATUS BADGE + DOTS */}
+              <div className=" flex flex-row justify-between items-center gap-1">
+                {/* STATUS BADGE (smaller) */}
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                    p.stockStatus === "OUT_OF_STOCK"
+                      ? "bg-red-500 text-white"
+                      : "bg-[#1A9899] text-white"
+                  }`}
+                >
+                  {p.stockStatus}
+                </span>
+
+                {/* DOTS / ACTION MENU (smaller button) */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="p-1">
+                      <MoreVertical size={16} />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuGroup>
+                      <div className="flex flex-col gap-1 justify-center">
+                        <button
+                          onClick={() => handleEdit(p._id)}
+                          className="text-sm text-gray-700 px-2 py-1 rounded hover:bg-gray-100 transition"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p._id)}
+                          className="text-sm text-gray-700 px-2 py-1 rounded hover:bg-gray-100 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  </div>
-))}
-
-       
+          ))}
         </div>
       </div>
     </DashboardLayout>
