@@ -12,7 +12,7 @@ import Profile from "./pages/dashboard/Profile";
 // export const serverUrl = "http://localhost:5000";
 
 // export const serverUrl = "https://smart-khata-omega.vercel.app" ;
-export const serverUrl = "https://smart-khata-iq7r2bra0-hameedguls-projects.vercel.app" ;
+export const serverUrl = "https://smart-khata-u1mg.vercel.app" ;
 
 import useGetUser from "./hooks/useGetUser"; 
 import Items from "./pages/dashboard/Items";
