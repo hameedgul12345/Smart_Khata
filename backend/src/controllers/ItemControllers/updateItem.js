@@ -30,7 +30,8 @@ const updateItem = async (req, res) => {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    res.json(updatedItem);
+   res.json({ item: updatedItem });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

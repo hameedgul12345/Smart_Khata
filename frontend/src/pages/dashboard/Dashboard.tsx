@@ -1,4 +1,3 @@
-
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import {
   LineChart,
@@ -33,8 +32,8 @@ interface ISaleData {
   todaySale: number;
   last7DaysSale: number;
   last30DaysSale: number;
-  daily7Days: { _id: string; total: number }[];
-  daily30Days: { _id: string; total: number }[];
+  daily7Days: { date?: string; total: number }[];
+  daily30Days: { date?: string; total: number }[];
 }
 
 /* ================= COMPONENT ================= */
@@ -42,65 +41,66 @@ interface ISaleData {
 const Dashboard: React.FC = () => {
   const items = useAppSelector((state: RootState) => state.items.items);
   const customers = useAppSelector(
-    (state: RootState) => state.customers.customers,
+    (state: RootState) => state.customers.customers
   );
 
   const [sales, setSales] = useState<ISaleData | null>(null);
   const [range, setRange] = useState<"7" | "30">("7");
   const [chartData, setChartData] = useState<IChartData[]>([]);
 
+  /* ================= CALCULATIONS ================= */
+
   let totalStockValue = 0;
   let totalDue = 0;
-  let totalCustomers = 0;
-  let totalItems = 0;
   let inStock = 0;
   let outOfStock = 0;
 
   customers.forEach((c) => {
-    totalDue += c.totalDue;
-    totalCustomers++;
+    totalDue += c.totalDue || 0;
   });
 
   items.forEach((item) => {
     totalStockValue += item.price * item.quantity;
-    totalItems++;
 
     if (item.stockStatus === "IN_STOCK") inStock++;
     else outOfStock++;
   });
 
+  /* ================= FETCH STATS ================= */
+
   useEffect(() => {
-    const getStates = async () => {
+    const getStats = async () => {
       try {
         const res = await axios.get(`${serverUrl}/api/user/getStates`, {
           withCredentials: true,
         });
 
-        setSales(res.data);
-        console.log(res.data)
+        const data: ISaleData = res.data;
+        setSales(data);
+        console.log(data)
 
-        const raw =
-          range === "7"
-            ? res.data.daily7Days
-            : res.data.daily30Days;
+        const raw = range === "7" ? data.daily7Days : data.daily30Days;
 
-        const formatted = raw.map((d: any) => ({
-          date: d._id,
-          sale: d.total,
-        }));
-
-        setChartData(formatted);
+        setChartData(
+          raw.map((d) => ({
+            date: d.date || "", // backend fills missing dates
+            sale: d.total,
+          }))
+        );
       } catch (error) {
         console.error("Error fetching stats:", error);
       }
     };
 
-    getStates();
+    getStats();
   }, [range]);
+
+  /* ================= UI ================= */
 
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+
         {/* ROW 1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard
@@ -119,12 +119,12 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard
             title="Total Customers"
-            value={totalCustomers}
+            value={customers.length}
             color="bg-purple-500"
           />
           <StatCard
             title="Total Items"
-            value={totalItems}
+            value={items.length}
             color="bg-indigo-500"
           />
         </div>
@@ -133,7 +133,7 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard
             title="Today Sale"
-            value={`Rs ${sales?.daily7Days[0]?.total ?? 0}`}
+            value={`Rs ${sales?.todaySale ?? 0}`}
             color="bg-green-500"
           />
           <StatCard
@@ -177,9 +177,12 @@ const Dashboard: React.FC = () => {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(value) => value.slice(5)} // MM-DD
+              />
               <YAxis />
-              <Tooltip />
+              <Tooltip formatter={(value: number) => `Rs ${value}`} />
               <Line
                 type="monotone"
                 dataKey="sale"
@@ -203,6 +206,7 @@ const Dashboard: React.FC = () => {
             color="bg-rose-500"
           />
         </div>
+
       </div>
     </DashboardLayout>
   );

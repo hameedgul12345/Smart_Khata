@@ -28,21 +28,17 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser
 app.use(cookieParser());
 
-
-
-
 app.use(
   cors({
     origin: [
       "https://smartkhatasystem.netlify.app",
-      "http://localhost:5173",             // ✅ keep this for local dev
+      "http://localhost:5173", // ✅ keep this for local dev
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  })
+  }),
 );
-
 
 // Static folder (for uploads, public files)
 app.use("/public", express.static("public"));
@@ -58,7 +54,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/products", productRoutes);
-app.use('/api/items', itemRoutes);
+app.use("/api/items", itemRoutes);
 
 /* ================== ERROR HANDLING ================== */
 
