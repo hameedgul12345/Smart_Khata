@@ -71,19 +71,19 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const getStats = async () => {
       try {
-        const res = await axios.get(`${serverUrl}/api/user/getStates`, {
-          withCredentials: true,
-        });
+        const res = await axios.get<ISaleData>(
+          `${serverUrl}/api/user/getStates`,
+          { withCredentials: true }
+        );
 
-        const data: ISaleData = res.data;
+        const data = res.data;
         setSales(data);
-        console.log(data)
 
         const raw = range === "7" ? data.daily7Days : data.daily30Days;
 
         setChartData(
           raw.map((d) => ({
-            date: d.date || "", // backend fills missing dates
+            date: d.date ?? "",
             sale: d.total,
           }))
         );
@@ -100,7 +100,6 @@ const Dashboard: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
-
         {/* ROW 1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard
@@ -177,12 +176,20 @@ const Dashboard: React.FC = () => {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
+
               <XAxis
                 dataKey="date"
-                tickFormatter={(value) => value.slice(5)} // MM-DD
+                tickFormatter={(value: string) => value.slice(5)}
               />
-              <YAxis />
-              <Tooltip formatter={(value: number) => `Rs ${value}`} />
+
+              <YAxis
+                tickFormatter={(value?: number) => `${value ?? 0}`}
+              />
+
+              <Tooltip
+                formatter={(value?: number) => `Rs ${value ?? 0}`}
+              />
+
               <Line
                 type="monotone"
                 dataKey="sale"
@@ -206,7 +213,6 @@ const Dashboard: React.FC = () => {
             color="bg-rose-500"
           />
         </div>
-
       </div>
     </DashboardLayout>
   );
