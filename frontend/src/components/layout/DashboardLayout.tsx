@@ -19,7 +19,7 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const user = useAppSelector((state: RootState) => state.user.user);
   const [open, setOpen] = useState(false);
-
+console.log("user",user)
   const SidebarContent = () => (
     <>
       <div className="p-6 text-2xl font-bold border-b border-white/20">
@@ -99,7 +99,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
           <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">
             <img
-              src={`https://ui-avatars.com/api/?name=${user?.name}`}
+              // src={`https://ui-avatars.com/api/?name=${user?.name}`}
+              src={user?.profilePicture}
               alt="Profile"
               className="w-full h-full rounded-full object-cover"
             />

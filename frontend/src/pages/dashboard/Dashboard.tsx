@@ -78,7 +78,7 @@ const Dashboard: React.FC = () => {
 
         const data = res.data;
         setSales(data);
-
+        console.log(data)
         const raw = range === "7" ? data.daily7Days : data.daily30Days;
 
         setChartData(

@@ -25,22 +25,22 @@ const decreaseDue = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    if (customer.totalDue < amount) {
-      return res.status(400).json({ message: "Payment amount exceeds total due" });
+    if (customer.totalAmount < amount) {
+      return res.status(400).json({ message: "Payment amount exceeds total Amount" });
     }
-
+     customer.amountPaid=0;
     // Subtract payment from totalDue
-    customer.totalDue = Number(customer.totalDue || 0) - Number(amount);
-    customer.amountPaid = (customer.amountPaid || 0) + Number(amount); // Update amount paid
+    customer.totalAmount = Number(customer.totalAmount || 0) - Number(amount);
+    customer.amountPaid = (customer.amountPaid) + Number(amount); // Update amount paid
 
     // Never allow negative due
-    if (customer.totalDue < 0) customer.totalDue = 0;
+    if (customer.totalAmount < 0) customer.totalAmount = 0;
 
     await customer.save();
 
     return res.json({
       message: "Payment received successfully",
-      newDue: customer.totalDue,   // ✅ FIXED
+      newDue: customer.totalAmount,   // ✅ FIXED
       customer
     });
 

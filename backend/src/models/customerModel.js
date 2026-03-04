@@ -19,11 +19,7 @@ const customerSchema = new mongoose.Schema(
       trim: true,
     },
 
-    totalDue: {
-      type: Number,
-      default: 0, // total udhar
-      min: 0,
-    },
+    
    totalAmount: {
       type: Number,
       default: 0, // total amount of all transactions
