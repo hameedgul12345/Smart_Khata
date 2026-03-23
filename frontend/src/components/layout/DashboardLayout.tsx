@@ -23,7 +23,7 @@ console.log("user",user)
   const SidebarContent = () => (
     <>
       <div className="p-6 text-2xl font-bold border-b border-white/20">
-        💼 Khata System
+       Apka Digital Khata
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
@@ -31,7 +31,7 @@ console.log("user",user)
           { to: "/dashboard", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
           { to: "/dashboard/items", icon: <Package size={20} />, label: "Items" },
           { to: "/dashboard/customers", icon: <Users size={20} />, label: "Customers" },
-          { to: "/dashboard/suppliers", icon: <BookOpen size={20} />, label: "Suppliers" },
+          // { to: "/dashboard/suppliers", icon: <BookOpen size={20} />, label: "Suppliers" },
           { to: "/dashboard/profile", icon: <Users size={20} />, label: "Profile" },
         ].map((item) => (
           <NavLink
@@ -61,7 +61,7 @@ console.log("user",user)
   return (
     <div className="flex min-h-screen bg-slate-100">
       {/* Desktop Sidebar */}
-      <aside className="w-64 bg-gradient-to-b from-teal-600 to-cyan-700 text-white hidden md:flex flex-col">
+      <aside className="w-64 bg-black text-white hidden md:flex flex-col">
         <SidebarContent />
       </aside>
 
