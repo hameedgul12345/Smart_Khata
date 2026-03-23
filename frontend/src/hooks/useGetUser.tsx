@@ -3,7 +3,7 @@ import axios, { AxiosError } from "axios";
 import { serverUrl } from "../App";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setUser } from "../redux/slices/userSlice";
- 
+
 import type { RootState } from "../redux/store";
 
 interface User {
@@ -13,9 +13,12 @@ interface User {
   profilePicture?: string;
 }
 
-function useGetUser(): { user: User | null; loading: boolean; error: string | null } {
-
-const user = useAppSelector((state: RootState) => state.user.user);
+function useGetUser(): {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+} {
+  const user = useAppSelector((state: RootState) => state.user.user);
   // console.log("user Profile",user)
   const dispatch = useAppDispatch();
 
@@ -32,11 +35,21 @@ const user = useAppSelector((state: RootState) => state.user.user);
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get<{ user: User }>(`${serverUrl}/api/user/me`, { withCredentials: true });
-        if (isMounted) dispatch(setUser(res.data.user));
+        const res = await axios.get<{ user: User }>(
+          `${serverUrl}/api/user/me`,
+          { withCredentials: true },
+        );
+        if (isMounted)
+          dispatch(
+            setUser({
+              ...res.data.user,
+              profilePicture: res.data.user.profilePicture || "",
+            }),
+          );
       } catch (err) {
         const error = err as AxiosError<{ message: string }>;
-        if (isMounted) setError(error.response?.data?.message || "Failed to load user");
+        if (isMounted)
+          setError(error.response?.data?.message || "Failed to load user");
         console.error("Get user failed:", error);
       } finally {
         if (isMounted) setLoading(false);

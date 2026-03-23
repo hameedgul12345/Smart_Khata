@@ -1,12 +1,11 @@
 import { createSlice,type PayloadAction } from "@reduxjs/toolkit";
 
 /* ================= TYPES ================= */
-export interface User {
+ export interface User {
   _id: string;
   name: string;
   email: string;
-  profilePicture:string
-  // add other fields returned by your API
+  profilePicture?: string; // ✅ make optional
 }
 
 interface UserState {
