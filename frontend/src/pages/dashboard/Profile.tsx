@@ -76,7 +76,7 @@ const Profile: React.FC = () => {
       >
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="bg-[#1A9999] px-6 py-8 text-white flex items-center gap-4">
+          <div className="bg-[#333333] px-6 py-8 text-white flex items-center gap-4">
             <div className="relative">
               <motion.img
                 src={profilePreview || `https://ui-avatars.com/api/?name=${user?.name}`}
@@ -160,7 +160,7 @@ const Profile: React.FC = () => {
               <button
                 onClick={handleUpdate}
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-[#1A9999] text-white font-semibold hover:bg-[#1A9999] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-3 rounded-xl bg-[#333333] text-white font-semibold hover:bg-[#020202] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? "Updating Profile..." : "Save Changes"}
               </button>

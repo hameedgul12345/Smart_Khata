@@ -93,29 +93,102 @@ function ViewBill() {
   };
 
   /* ================= PDF ================= */
-  const generateInvoice = () => {
-    if (!customer || customer.items.length === 0) return;
+ const generateInvoice = () => {
+  if (!customer || customer.items.length === 0) return;
 
-    const doc = new jsPDF();
+  const doc = new jsPDF();
 
-    doc.text("INVOICE", 14, 20);
+  /* ================= HEADER ================= */
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("786 Tractor Spare Parts", 14, 15);
 
-    const tableData = customer.items.map((item, i) => [
-      i + 1,
-      item.itemName,
-      item.quantity,
-      `Rs ${item.price}`,
-      `Rs ${item.total}`,
-    ]);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("Sales Invoice", 160, 15);
 
-    autoTable(doc, {
-      startY: 30,
-      head: [["#", "Item", "Qty", "Price", "Total"]],
-      body: tableData,
-    });
+  doc.line(14, 18, 196, 18);
 
-    doc.save(`${customer.name}-invoice.pdf`);
-  };
+  /* ================= CUSTOMER INFO ================= */
+  doc.setFontSize(11);
+  doc.text(`Customer: ${customer.name}`, 14, 25);
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 120, 25);
+  doc.text(`Type: CREDIT`, 160, 25);
+
+  /* ================= TABLE ================= */
+  const tableData = customer.items.map((item, i) => [
+    i + 1,
+    item.itemName,
+    item.quantity,
+    `Rs ${item.price}`,
+    `Rs ${item.total}`,
+  ]);
+
+  autoTable(doc, {
+    startY: 35,
+    head: [["#", "Product", "Qty", "Unit Price", "Total"]],
+    body: tableData,
+    theme: "grid",
+    headStyles: {
+      fillColor: [0, 0, 0],
+      textColor: 255,
+      fontStyle: "bold",
+    },
+    styles: {
+      fontSize: 10,
+      cellPadding: 3,
+    },
+  });
+
+  /* ================= CALCULATIONS ================= */
+  const finalY = (doc as any).lastAutoTable.finalY || 60;
+
+  const totalAmount = customer.items.reduce(
+    (sum, item) => sum + item.total,
+    0
+  );
+
+  const amountPaid = customer.amountPaid || 0;
+  const remainingDue = totalAmount - amountPaid;
+
+  /* ================= STATUS ================= */
+  let status = "UNPAID";
+  if (remainingDue === 0) status = "PAID";
+  else if (amountPaid > 0) status = "PARTIAL";
+
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Status: ${status}`, 14, finalY + 10);
+
+  /* ================= TOTAL DETAILS ================= */
+  doc.text(`Total Amount: Rs ${totalAmount}`, 140, finalY + 10);
+  doc.text(`Paid: Rs ${amountPaid}`, 140, finalY + 17);
+
+  doc.setTextColor(200, 0, 0); // red
+  doc.text(`Remaining Due: Rs ${remainingDue}`, 140, finalY + 24);
+
+  /* ================= GRAND TOTAL BOX ================= */
+  doc.setFillColor(0, 0, 0);
+  doc.rect(140, finalY + 30, 60, 10, "F");
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(12);
+  doc.text("GRAND TOTAL:", 142, finalY + 37);
+  doc.text(`Rs ${totalAmount}`, 180, finalY + 37, { align: "right" });
+
+  /* ================= FOOTER ================= */
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10);
+
+  doc.text("____________________", 20, finalY + 50);
+  doc.text("Customer Signature", 20, finalY + 55);
+
+  doc.text("____________________", 140, finalY + 50);
+  doc.text("Authorized Signature", 140, finalY + 55);
+
+  /* ================= SAVE ================= */
+  doc.save(`${customer.name}-invoice.pdf`);
+};
 
   if (!customer) return <DashboardLayout>Loading...</DashboardLayout>;
 
