@@ -48,6 +48,18 @@ const Dashboard: React.FC = () => {
   const [range, setRange] = useState<"7" | "30">("7");
   const [chartData, setChartData] = useState<IChartData[]>([]);
 
+  const borderColors: Record<string, string> = {
+  "blue-600": "border-blue-600",
+  "red-500": "border-red-500",
+  "purple-500": "border-purple-500",
+  "indigo-500": "border-indigo-500",
+  "green-500": "border-green-500",
+  "teal-500": "border-teal-500",
+  "orange-500": "border-orange-500",
+  "emerald-500": "border-emerald-500",
+  "rose-500": "border-rose-500",
+};
+
   /* ================= CALCULATIONS ================= */
 
   let totalStockValue = 0;
@@ -105,12 +117,12 @@ const Dashboard: React.FC = () => {
           <StatCard
             title="Total Stock Value"
             value={`Rs ${totalStockValue}`}
-            color="bg-blue-500"
+            color="blue-600"
           />
           <StatCard
             title="Total Due"
             value={`Rs ${totalDue}`}
-            color="bg-red-500"
+            color="red-500"
           />
         </div>
 
@@ -119,12 +131,12 @@ const Dashboard: React.FC = () => {
           <StatCard
             title="Total Customers"
             value={customers.length}
-            color="bg-purple-500"
+            color="purple-500"
           />
           <StatCard
             title="Total Items"
             value={items.length}
-            color="bg-indigo-500"
+            color="indigo-500"
           />
         </div>
 
@@ -133,17 +145,17 @@ const Dashboard: React.FC = () => {
           <StatCard
             title="Today Sale"
             value={`Rs ${sales?.todaySale ?? 0}`}
-            color="bg-green-500"
+            color="green-500"
           />
           <StatCard
             title="Last 7 Days Sale"
             value={`Rs ${sales?.last7DaysSale ?? 0}`}
-            color="bg-teal-500"
+            color="teal-500"
           />
           <StatCard
             title="Last 30 Days Sale"
             value={`Rs ${sales?.last30DaysSale ?? 0}`}
-            color="bg-orange-500"
+            color="orange-500"
           />
         </div>
 
@@ -205,12 +217,13 @@ const Dashboard: React.FC = () => {
           <StatCard
             title="In Stock"
             value={inStock}
-            color="bg-emerald-500"
+            color="emerald-500"
           />
           <StatCard
             title="Out of Stock"
             value={outOfStock}
-            color="bg-rose-500"
+            color="rose-500"
+            
           />
         </div>
       </div>
@@ -219,11 +232,12 @@ const Dashboard: React.FC = () => {
 };
 
 /* ================= STAT CARD ================= */
-
-const StatCard: React.FC<StatCardProps> = ({ title, value, color }) => {
+const StatCard: React.FC<StatCardProps> = ({ title, value, color, }) => {
   return (
-    <div className={`${color} text-white rounded-xl shadow p-6`}>
-      <h3 className="text-sm opacity-90">{title}</h3>
+    <div
+      className={`bg-white text-black rounded-xl shadow p-6 border-b-4 border-${color}`}
+    >
+      <h3 className="text-sm opacity-80">{title}</h3>
       <p className="text-2xl font-bold mt-2">{value}</p>
     </div>
   );
