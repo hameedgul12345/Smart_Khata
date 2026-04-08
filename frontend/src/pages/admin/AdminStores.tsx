@@ -3,11 +3,21 @@ import AdminLayout from "./AdminLayout";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+/* ================= TYPE ================= */
+type Store = {
+  _id: string;
+  name: string;
+  owner: string;
+  category: string;
+  status: "active" | "blocked";
+  createdAt: string;
+};
+
 function AdminStores() {
-  const [stores, setStores] = useState([]);
+  const [stores, setStores] = useState<Store[]>([]); // ✅ FIXED
 
   // ✅ Dummy Stores Data
-  const dummyStores = [
+  const dummyStores: Store[] = [
     {
       _id: "1",
       name: "Tech World",
@@ -40,7 +50,7 @@ function AdminStores() {
   }, []);
 
   // ✅ Toggle Store Status
-  const toggleStatus = (id) => {
+  const toggleStatus = (id: string) => {
     setStores((prev) =>
       prev.map((store) =>
         store._id === id
@@ -54,7 +64,7 @@ function AdminStores() {
   };
 
   // ✅ Status Badge
-  const getStatusBadge = (status) => (
+  const getStatusBadge = (status: Store["status"]) => (
     <span
       className={`px-2 py-1 rounded-full text-white text-sm ${
         status === "active" ? "bg-green-500" : "bg-red-500"
@@ -84,7 +94,7 @@ function AdminStores() {
           <tbody>
             {stores.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center py-6">
+                <td colSpan={6} className="text-center py-6">
                   No stores found
                 </td>
               </tr>
@@ -95,9 +105,7 @@ function AdminStores() {
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <td className="px-6 py-4">{store.name}</td>
-
                   <td className="px-6 py-4">{store.owner}</td>
-
                   <td className="px-6 py-4">{store.category}</td>
 
                   <td className="px-6 py-4">
@@ -112,7 +120,9 @@ function AdminStores() {
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={store.status === "active"}
-                        onCheckedChange={() => toggleStatus(store._id)}
+                        onCheckedChange={() =>
+                          toggleStatus(store._id)
+                        }
                       />
                       <Label>
                         {store.status === "active"

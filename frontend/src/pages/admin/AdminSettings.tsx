@@ -3,8 +3,17 @@ import AdminLayout from "./AdminLayout";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+/* ================= TYPE ================= */
+type Settings = {
+  siteName: string;
+  maintenanceMode: boolean;
+  allowRegistration: boolean;
+  defaultPlan: "free" | "basic" | "pro";
+  emailNotifications: boolean;
+};
+
 function AdminSettings() {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<Settings>({
     siteName: "My SaaS Platform",
     maintenanceMode: false,
     allowRegistration: true,
@@ -12,24 +21,34 @@ function AdminSettings() {
     emailNotifications: true,
   });
 
-  const toggleSetting = (key) => {
+  // ✅ Toggle boolean settings safely
+  const toggleSetting = (key: keyof Settings) => {
     setSettings((prev) => ({
       ...prev,
-      [key]: !prev[key],
+      [key]:
+        typeof prev[key] === "boolean"
+          ? !prev[key]
+          : prev[key], // prevent string toggle error
     }));
   };
 
-  const handleSiteNameChange = (e) => {
+  // ✅ Input change (typed)
+  const handleSiteNameChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setSettings((prev) => ({
       ...prev,
       siteName: e.target.value,
     }));
   };
 
-  const handlePlanChange = (e) => {
+  // ✅ Select change (typed)
+  const handlePlanChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setSettings((prev) => ({
       ...prev,
-      defaultPlan: e.target.value,
+      defaultPlan: e.target.value as Settings["defaultPlan"],
     }));
   };
 

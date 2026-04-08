@@ -3,11 +3,25 @@ import AdminLayout from "./AdminLayout";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+/* ================= TYPE ================= */
+type Subscription = {
+  _id: string;
+  user: {
+    name: string;
+  };
+  plan: "free" | "basic" | "pro";
+  price: number;
+  billingCycle: string;
+  startDate: string;
+  expiryDate: string;
+  status: "active" | "cancelled";
+};
+
 function AdminSubscriptions() {
-  const [subscriptions, setSubscriptions] = useState([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]); // ✅ FIXED
 
   // ✅ Dummy Data
-  const dummySubscriptions = [
+  const dummySubscriptions: Subscription[] = [
     {
       _id: "1",
       user: { name: "Ali Khan" },
@@ -45,8 +59,8 @@ function AdminSubscriptions() {
     setSubscriptions(dummySubscriptions);
   }, []);
 
-  // ✅ Toggle status (Active / Cancelled)
-  const toggleStatus = (id) => {
+  // ✅ Toggle status
+  const toggleStatus = (id: string) => {
     setSubscriptions((prev) =>
       prev.map((sub) =>
         sub._id === id
@@ -60,7 +74,7 @@ function AdminSubscriptions() {
   };
 
   // ✅ Plan Badge
-  const getPlanBadge = (plan) => (
+  const getPlanBadge = (plan: Subscription["plan"]) => (
     <span
       className={`px-2 py-1 rounded-full text-white text-sm ${
         plan === "pro"
@@ -75,14 +89,12 @@ function AdminSubscriptions() {
   );
 
   // ✅ Status Badge
-  const getStatusBadge = (status) => (
+  const getStatusBadge = (status: Subscription["status"]) => (
     <span
       className={`px-2 py-1 rounded-full text-white text-sm ${
         status === "active"
           ? "bg-green-500"
-          : status === "cancelled"
-          ? "bg-red-500"
-          : "bg-gray-400"
+          : "bg-red-500"
       }`}
     >
       {status}
@@ -111,7 +123,7 @@ function AdminSubscriptions() {
           <tbody>
             {subscriptions.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center py-6">
+                <td colSpan={8} className="text-center py-6">
                   No subscriptions found
                 </td>
               </tr>
@@ -121,7 +133,7 @@ function AdminSubscriptions() {
                   key={sub._id}
                   className="border-b hover:bg-gray-50 transition"
                 >
-                  <td className="px-6 py-4">{sub.user?.name}</td>
+                  <td className="px-6 py-4">{sub.user.name}</td>
 
                   <td className="px-6 py-4">
                     {getPlanBadge(sub.plan)}
@@ -147,7 +159,9 @@ function AdminSubscriptions() {
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={sub.status === "active"}
-                        onCheckedChange={() => toggleStatus(sub._id)}
+                        onCheckedChange={() =>
+                          toggleStatus(sub._id)
+                        }
                       />
                       <Label>
                         {sub.status === "active"
