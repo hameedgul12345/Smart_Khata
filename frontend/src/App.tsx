@@ -29,7 +29,10 @@ import useGetItems from "./hooks/useGetItems";
 import useGetCustomers from "./hooks/useGetCustomers";
 
 // ================= SERVER =================
-export const serverUrl = "http://localhost:5000";
+// export const serverUrl = "http://localhost:5000";
+
+export const serverUrl = "https://smart-khata-u1mg.vercel.app";
+
 
 function App() {
   const { loading } = useGetUser();
