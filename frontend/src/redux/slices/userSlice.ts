@@ -1,13 +1,33 @@
-import { createSlice,type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 /* ================= TYPES ================= */
- export interface User {
+export interface User {
   _id: string;
   name: string;
   email: string;
-  profilePicture?: string; // ✅ make optional
+  shopName?: string;
+
+  role: "user" | "admin"; // ✅ enum match
+
+  profilePicture?: string;
+
+  isActive: boolean;
+
+  plan: "free" | "basic" | "pro";
+
+  subscriptionStatus: "active" | "expired" | "trial";
+
+  subscriptionExpiresAt?: string; // Date comes as string from API
+
+  stores: string[]; // ObjectId[] → string[]
+
+  lastLogin?: string;
+
+  createdAt?: string;
+  updatedAt?: string;
 }
 
+/* ================= STATE ================= */
 interface UserState {
   user: User | null;
 }
@@ -25,9 +45,13 @@ const userSlice = createSlice({
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload;
     },
+
+    clearUser: (state) => {
+      state.user = null;
+    },
   },
 });
 
-export const { setUser } = userSlice.actions;
-
+/* ================= EXPORTS ================= */
+export const { setUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

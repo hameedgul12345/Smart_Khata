@@ -50,10 +50,10 @@ function ViewBill() {
 
   /* ================= DELETE ITEM ================= */
   const deleteItem = async (itemId: string) => {
-    if (!confirm("Delete this item?")) return;
+    // if (!confirm("Delete this item?")) return;
 
     try {
-      await axios.delete(`${serverUrl}/api/customers/remove-item`, {
+      await axios.delete(`${serverUrl}/api/items/remove-item`, {
         data: { customerId: id, itemId },
         withCredentials: true,
       });
@@ -193,8 +193,7 @@ function ViewBill() {
   if (!customer) return <DashboardLayout>Loading...</DashboardLayout>;
 
   const total = customer.totalAmount;
-  const paid = customer.amountPaid;
-  const due = total - paid;
+  
 
   return (
     <DashboardLayout>
@@ -229,9 +228,9 @@ function ViewBill() {
             </div>
 
             <div className="text-right">
-              <p>Total: Rs {total}</p>
-              <p className="text-green-600">Paid: Rs {paid}</p>
-              <p className="text-red-600 font-bold">Due: Rs {due}</p>
+              {/* <p>Due: Rs {total}</p> */}
+              {/* <p className="text-green-600">Paid: Rs {paid}</p> */}
+              {/* <p className="text-red-600 font-bold">Due: Rs {total}</p> */}
             </div>
           </div>
 

@@ -6,11 +6,36 @@ import { setUser } from "../redux/slices/userSlice";
 
 import type { RootState } from "../redux/store";
 
+// interface User {
+//   _id: string;
+//   name: string;
+//   email: string;
+//   profilePicture?: string;
+// }
 interface User {
   _id: string;
   name: string;
   email: string;
+  shopName?: string;
+
+  role: "user" | "admin"; // ✅ enum match
+
   profilePicture?: string;
+
+  isActive: boolean;
+
+  plan: "free" | "basic" | "pro";
+
+  subscriptionStatus: "active" | "expired" | "trial";
+
+  subscriptionExpiresAt?: string; // Date comes as string from API
+
+  stores: string[]; // ObjectId[] → string[]
+
+  lastLogin?: string;
+
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 function useGetUser(): {
@@ -39,13 +64,20 @@ function useGetUser(): {
           `${serverUrl}/api/user/me`,
           { withCredentials: true },
         );
+        console.log(res.data.user,"fetched user")
         if (isMounted)
           dispatch(
             setUser({
               ...res.data.user,
               profilePicture: res.data.user.profilePicture || "",
+              role: res.data.user.role || "user",
+              isActive: res.data.user.isActive ?? true,
+              plan: res.data.user.plan || "free",
+              subscriptionStatus: res.data.user.subscriptionStatus || "trial",
+              stores: res.data.user.stores || [],
             }),
           );
+          
       } catch (err) {
         const error = err as AxiosError<{ message: string }>;
         if (isMounted)

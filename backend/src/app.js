@@ -1,18 +1,105 @@
+// import express from "express";
+// import dotenv from "dotenv";
+// import cors from "cors";
+// import cookieParser from "cookie-parser";
+// import authRoutes from "./routes/authRoutes.js";
+// import customerRoutes from "./routes/customerRoutes.js";
+// import userRoutes from "./routes/userRoutes.js";
+// import productRoutes from "./routes/productRoutes.js";
+// import connectDB from "./config/db.js";
+// import itemRoutes from "./routes/itemRoutes.js";
+// import createAdmin from "./middlewares/createAdmin.js";
+// // Load env variables
+// dotenv.config();
+
+// // Connect Database
+// connectDB();
+// createAdmin()
+// // Create express app
+// const app = express();
+
+// /* ================== MIDDLEWARES ================== */
+
+// // Body parser (JSON)
+// app.use(express.json());
+
+// // Body parser (form data)
+// app.use(express.urlencoded({ extended: true }));
+
+// // Cookie parser
+// app.use(cookieParser());
+
+// app.use(
+//   cors({
+//     origin: [
+//       "https://smartkhatasystem.netlify.app",
+//       "http://localhost:5173", // ✅ keep this for local dev
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   }),
+// );
+
+// // Static folder (for uploads, public files)
+// app.use("/public", express.static("public"));
+
+// /* ================== ROUTES ================== */
+
+// app.get("/", (req, res) => {
+//   res.send("API is running...");
+// });
+
+// // Example routes
+// app.use("/api/auth", authRoutes);
+// app.use("/api/customers", customerRoutes);
+// app.use("/api/user", userRoutes);
+// app.use("/api/products", productRoutes);
+// app.use("/api/items", itemRoutes);
+
+// /* ================== ERROR HANDLING ================== */
+
+// // 404 handler
+// app.use((req, res, next) => {
+//   res.status(404).json({ message: "Route not found" });
+// });
+
+// // Global error handler
+// app.use((err, req, res, next) => {
+//   console.error("Error:", err.message);
+//   res.status(500).json({
+//     success: false,
+//     message: err.message || "Server Error",
+//   });
+// });
+
+// /* ================== SERVER ================== */
+
+// const PORT = process.env.PORT || 5000;
+
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on port ${PORT}`);
+// });
+
+// export default app;
+
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
 import authRoutes from "./routes/authRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-import connectDB from "./config/db.js";
 import itemRoutes from "./routes/itemRoutes.js";
+
+import connectDB from "./config/db.js";
+import createAdmin from "./middlewares/createAdmin.js";
+
 // Load env variables
 dotenv.config();
-
-// Connect Database
-connectDB();
 
 // Create express app
 const app = express();
@@ -28,19 +115,20 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser
 app.use(cookieParser());
 
+// CORS config
 app.use(
   cors({
     origin: [
       "https://smartkhatasystem.netlify.app",
-      "http://localhost:5173", // ✅ keep this for local dev
+      "http://localhost:5173",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  }),
+  })
 );
 
-// Static folder (for uploads, public files)
+// Static folder
 app.use("/public", express.static("public"));
 
 /* ================== ROUTES ================== */
@@ -49,7 +137,6 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// Example routes
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", userRoutes);
@@ -72,12 +159,29 @@ app.use((err, req, res, next) => {
   });
 });
 
-/* ================== SERVER ================== */
+/* ================== SERVER START ================== */
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    // ✅ Connect DB FIRST
+    await connectDB();
+
+    // ✅ Create admin if not exists
+    await createAdmin();
+
+    // ✅ Start server ONLY after everything is ready
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("❌ Server failed to start:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;
