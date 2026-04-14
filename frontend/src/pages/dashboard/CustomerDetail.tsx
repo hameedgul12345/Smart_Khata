@@ -46,11 +46,15 @@ function CustomerDetail() {
   const items = useAppSelector((state) => state.items.items);
 
   const [customer, setCustomer] = useState<Customer | null>(null);
+
   const [dueBoxOpen, setDueBoxOpen] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState("");
+
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [itemQty, setItemQty] = useState(1);
+
   const [loading, setLoading] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
 
   /* FETCH ITEMS */
   useEffect(() => {
@@ -59,67 +63,83 @@ function CustomerDetail() {
         .get(`${serverUrl}/api/items/get-items`, { withCredentials: true })
         .then((res) => {
           dispatch(setItems(res.data.items));
-        });
+        })
+        .catch((err) => console.error("Items fetch error:", err));
     }
   }, [items.length, dispatch]);
 
   /* FETCH CUSTOMER */
   useEffect(() => {
-    axios
-      .get(`${serverUrl}/api/customers/${id}`, {
-        withCredentials: true,
-      })
-      .then((res) => setCustomer(res.data.customer));
+    const fetchCustomer = async () => {
+      try {
+        const res = await axios.get(
+          `${serverUrl}/api/customers/${id}`,
+          { withCredentials: true }
+        );
+        setCustomer(res.data.customer);
+      } catch (err) {
+        console.error("Customer fetch error:", err);
+      }
+    };
+
+    if (id) fetchCustomer();
   }, [id]);
 
   /* RECEIVE PAYMENT */
   const receivePayment = async () => {
-    if (!paymentAmount) return;
+    const amount = Number(paymentAmount);
 
-    await axios.put(
-      `${serverUrl}/api/customers/update-due`,
-      { customerId: id, amount: Number(paymentAmount) },
-      { withCredentials: true }
-    );
+    if (!amount || amount <= 0 || !customer) return;
+    if (amount > customer.totalAmount) return;
 
-    setCustomer((prev) =>
-      prev
-        ? { ...prev, totalAmount: prev.totalAmount - Number(paymentAmount) }
-        : prev
-    );
+    try {
+      setPaymentLoading(true);
 
-    setPaymentAmount("");
-    setDueBoxOpen(false);
+      const res = await axios.put(
+        `${serverUrl}/api/customers/update-due`,
+        { customerId: id, amount },
+        { withCredentials: true }
+      );
+
+      setCustomer(res.data.customer);
+      setPaymentAmount("");
+      setDueBoxOpen(false);
+    } catch (err) {
+      console.error("Payment error:", err);
+    } finally {
+      setPaymentLoading(false);
+    }
   };
 
   /* ADD ITEM */
   const handleAddItemToCustomer = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem || !customer) return;
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    await axios.post(
-      `${serverUrl}/api/customers/add-items-to/${id}`,
-      {
-        itemId: selectedItem._id,
-        quantity: itemQty,
-      },
-      { withCredentials: true }
-    );
+      const res = await axios.post(
+        `${serverUrl}/api/customers/add-items-to/${id}`,
+        {
+          itemId: selectedItem._id,
+          quantity: itemQty,
+        },
+        { withCredentials: true }
+      );
 
-    setCustomer((prev) =>
-      prev
-        ? {
-            ...prev,
-            totalAmount: prev.totalAmount + selectedItem.price * itemQty,
-          }
-        : prev
-    );
-
-    setSelectedItem(null);
-    setItemQty(1);
-    setLoading(false);
+      setCustomer(res.data.customer);
+      setSelectedItem(null);
+      setItemQty(1);
+    } catch (err) {
+      console.error("Add item error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const itemTotal = selectedItem
+    ? selectedItem.price * itemQty
+    : 0;
 
   return (
     <DashboardLayout>
@@ -186,8 +206,18 @@ function CustomerDetail() {
                 value={paymentAmount}
                 onChange={(e) => setPaymentAmount(e.target.value)}
               />
-              <Button onClick={receivePayment}>Receive</Button>
-              <Button variant="ghost" onClick={() => setDueBoxOpen(false)}>
+
+              <Button
+                onClick={receivePayment}
+                disabled={paymentLoading}
+              >
+                Receive
+              </Button>
+
+              <Button
+                variant="ghost"
+                onClick={() => setDueBoxOpen(false)}
+              >
                 Cancel
               </Button>
             </CardContent>
@@ -220,11 +250,11 @@ function CustomerDetail() {
                   </Badge>
                 </div>
 
-                <p>Price: ${p.price}</p>
+                <p>Price: Rs {p.price}</p>
                 <p>Stock: {p.quantity}</p>
 
                 <p className="font-bold text-primary">
-                  ${p.totalPrice}
+                  Rs {p.totalPrice}
                 </p>
               </CardContent>
             </Card>
@@ -232,7 +262,12 @@ function CustomerDetail() {
         </div>
 
         {/* MODAL */}
-        <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
+        <Dialog
+          open={!!selectedItem}
+          onOpenChange={(open) => {
+            if (!open) setSelectedItem(null);
+          }}
+        >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add Item</DialogTitle>
@@ -240,14 +275,21 @@ function CustomerDetail() {
 
             {selectedItem && (
               <div className="space-y-4">
-                <p>{selectedItem.name}</p>
-                <p>Price: ${selectedItem.price}</p>
+                <p className="font-semibold">{selectedItem.name}</p>
+                <p>Price: Rs {selectedItem.price}</p>
 
                 <Input
                   type="number"
+                  min={1}
                   value={itemQty}
-                  onChange={(e) => setItemQty(Number(e.target.value))}
+                  onChange={(e) =>
+                    setItemQty(Number(e.target.value))
+                  }
                 />
+
+                <p className="font-bold">
+                  Total: Rs {itemTotal}
+                </p>
 
                 <div className="flex justify-end gap-2">
                   <Button

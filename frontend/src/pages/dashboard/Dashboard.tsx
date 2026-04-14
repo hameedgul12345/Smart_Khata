@@ -68,7 +68,8 @@ const Dashboard: React.FC = () => {
   let outOfStock = 0;
 
   customers.forEach((c) => {
-    totalDue += c.totalDue || 0;
+    totalDue += c.totalAmount || 0;
+    // console.log(c)
   });
 
   items.forEach((item) => {
