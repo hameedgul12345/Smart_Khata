@@ -137,6 +137,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", userRoutes);

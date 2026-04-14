@@ -40,6 +40,7 @@ function ViewBill() {
         withCredentials: true,
       });
       setCustomer(res.data.customer);
+      console.log("customer",res.data.customer)
     } catch (error) {
       console.error(error);
     }
@@ -47,6 +48,7 @@ function ViewBill() {
 
   useEffect(() => {
     if (id) fetchCustomer();
+    console.log("customer",customer)
   }, [id]);
 
   /* ================= DELETE ITEM ================= */
@@ -96,7 +98,7 @@ function ViewBill() {
   /* ================= PDF ================= */
  const generateInvoice = () => {
   if (!customer || customer.items.length === 0) return;
-
+  fetchCustomer(); // to get latest data before generating
   const doc = new jsPDF();
 
   /* ================= HEADER ================= */
@@ -150,12 +152,13 @@ function ViewBill() {
   );
 
   const amountPaid = customer.amountPaid || 0;
-  const remainingDue = totalAmount - amountPaid;
+  // const remainingDue = totalAmount - amountPaid;
 
-  /* ================= STATUS ================= */
-  let status = "UNPAID";
-  if (remainingDue === 0) status = "PAID";
-  else if (amountPaid > 0) status = "PARTIAL";
+  // /* ================= STATUS ================= */
+  // let status = "UNPAID";
+  // if (remainingDue === 0) status = "PAID";
+
+  // else if (amountPaid > 0) status = "PARTIAL";
 
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
@@ -163,10 +166,10 @@ function ViewBill() {
 
   /* ================= TOTAL DETAILS ================= */
   doc.text(`Total Amount: Rs ${totalAmount}`, 140, finalY + 10);
-  doc.text(`Paid: Rs ${amountPaid}`, 140, finalY + 17);
+  // doc.text(`Paid: Rs ${amountPaid}`, 140, finalY + 17);
 
   doc.setTextColor(200, 0, 0); // red
-  doc.text(`Remaining Due: Rs ${remainingDue}`, 140, finalY + 24);
+  // doc.text(`Remaining Due: Rs ${remainingDue}`, 140, finalY + 24);
 
   /* ================= GRAND TOTAL BOX ================= */
   doc.setFillColor(0, 0, 0);

@@ -28,6 +28,8 @@ import useGetUser from "./hooks/useGetUser";
 import useGetItems from "./hooks/useGetItems";
 import useGetCustomers from "./hooks/useGetCustomers";
 
+import { Toaster } from "sonner";
+
 // ================= SERVER =================
 export const serverUrl = "http://localhost:5000";
 
@@ -49,6 +51,8 @@ function App() {
     );
 
   return (
+   <>
+     <Toaster position="top-right" richColors />
     <BrowserRouter>
       <Routes>
         {/* ========== PUBLIC ROUTES ========== */}
@@ -155,6 +159,7 @@ function App() {
         />
       </Routes>
     </BrowserRouter>
+   </>
   );
 }
 
