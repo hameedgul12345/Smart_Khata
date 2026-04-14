@@ -7,8 +7,7 @@ export interface Customer {
   phone?: string;
   totalDue: number;
   totalAmount: number;
-  createdAt: string;
-  updatedAt: string;
+
 }
 
 /* ================= SLICE ================= */

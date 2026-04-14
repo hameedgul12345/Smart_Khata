@@ -9,10 +9,11 @@ import { serverUrl } from "../App";
 export interface Customer {
   _id: string;
   name: string;
-  phone: string;
+  phone?: string;
   address?: string;
+
   totalDue: number;
-  
+  totalAmount: number; // optional if API sometimes missing
 }
 
 /* ================= HOOK ================= */
