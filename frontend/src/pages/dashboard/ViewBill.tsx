@@ -4,7 +4,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-
+import { toast } from "sonner";
 import { serverUrl } from "../../App";
 import { Trash2 } from "lucide-react";
 
@@ -53,47 +53,50 @@ function ViewBill() {
 
   /* ================= DELETE ITEM ================= */
   const deleteItem = async (itemId: string) => {
-    // if (!confirm("Delete this item?")) return;
+  try {
+    await axios.delete(`${serverUrl}/api/items/remove-item`, {
+      data: { customerId: id, itemId },
+      withCredentials: true,
+    });
 
-    try {
-      await axios.delete(`${serverUrl}/api/items/remove-item`, {
-        data: { customerId: id, itemId },
-        withCredentials: true,
-      });
+    setCustomer((prev) =>
+      prev
+        ? {
+            ...prev,
+            items: prev.items.filter((i) => i._id !== itemId),
+            totalAmount:
+              prev.totalAmount -
+              (prev.items.find((i) => i._id === itemId)?.total || 0),
+          }
+        : prev
+    );
 
-      // update UI
-      setCustomer((prev) =>
-        prev
-          ? {
-              ...prev,
-              items: prev.items.filter((i) => i._id !== itemId),
-              totalAmount:
-                prev.totalAmount -
-                (prev.items.find((i) => i._id === itemId)?.total || 0),
-            }
-          : prev
-      );
-    } catch (error) {
-      console.error("Delete failed", error);
-    }
-  };
+    toast.success("Item deleted successfully ✅");
+  } catch (error) {
+    console.error("Delete failed", error);
+    toast.error("Failed to delete item ❌");
+  }
+};
 
   /* ================= CLEAR ALL ================= */
   const clearAll = async () => {
-    if (!confirm("Clear all items?")) return;
+  if (!confirm("Clear all items?")) return;
 
-    try {
-      await axios.delete(`${serverUrl}/api/customers/clear-items/${id}`, {
-        withCredentials: true,
-      });
+  try {
+    await axios.delete(`${serverUrl}/api/customers/clear-items/${id}`, {
+      withCredentials: true,
+    });
 
-      setCustomer((prev) =>
-        prev ? { ...prev, items: [], totalAmount: 0 } : prev
-      );
-    } catch (error) {
-      console.error("Clear failed", error);
-    }
-  };
+    setCustomer((prev) =>
+      prev ? { ...prev, items: [], totalAmount: 0 } : prev
+    );
+
+    toast.success("All items cleared 🧹");
+  } catch (error) {
+    console.error("Clear failed", error);
+    toast.error("Failed to clear items ❌");
+  }
+};
 
   /* ================= PDF ================= */
  const generateInvoice = () => {
