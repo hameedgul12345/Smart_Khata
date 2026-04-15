@@ -1,9 +1,10 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent, useEffect } from "react";
 import axios, { AxiosError } from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { serverUrl } from "../../App";
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setUser } from "../../redux/slices/userSlice";
+import type { RootState } from "../../redux/store";
 
 interface SigninForm {
   email: string;
@@ -11,8 +12,9 @@ interface SigninForm {
 }
 
 const Signin = () => {
-  const dispatch = useAppDispatch(); // ✅ FIXED
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const user = useAppSelector((state: RootState) => state.user.user);
 
   const [formData, setFormData] = useState<SigninForm>({
     email: "",
@@ -21,8 +23,12 @@ const Signin = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  // ✅ Handle input change
+  useEffect(() => {
+    if (user) navigate("/dashboard");
+  }, [user]);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -30,7 +36,6 @@ const Signin = () => {
     });
   };
 
-  // ✅ Handle form submit
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
@@ -43,10 +48,7 @@ const Signin = () => {
         { withCredentials: true }
       );
 
-      // ✅ Store user in Redux
       dispatch(setUser(res.data.user));
-
-      // ✅ Navigate to dashboard
       navigate("/dashboard");
 
     } catch (err) {
@@ -58,87 +60,101 @@ const Signin = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-100 to-slate-200">
-      
-      {/* Left Branding Panel */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-teal-600 to-cyan-700 text-white items-center justify-center p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top,white,transparent_70%)]"></div>
+    <div className="min-h-screen flex bg-[#0B1120] text-white">
+
+      {/* LEFT PANEL */}
+      <div className="hidden lg:flex w-1/2 items-center justify-center p-12 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1A9899]/20 to-transparent blur-3xl"></div>
+
         <div className="relative z-10 max-w-md text-center">
-          <h1 className="text-4xl font-bold mb-4 leading-tight">
-            Welcome Back 
+          <h1 className="text-4xl font-bold mb-4">
+            Welcome Back 👋
           </h1>
-          <p className="text-lg opacity-90">
-            Login to continue managing your Khata system efficiently.
+          <p className="text-gray-300">
+            Manage your business with powerful analytics & tools.
           </p>
+
           <img
             src="/images/image1.png"
-            alt="Login Illustration"
-            className="mt-10 drop-shadow-2xl"
+            className="mt-10 opacity-90"
           />
         </div>
       </div>
 
-      {/* Right Form Panel */}
+      {/* RIGHT PANEL */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
-          <div className="bg-white/80 backdrop-blur-lg shadow-xl rounded-2xl p-8 border border-gray-100">
-            
-            <h2 className="text-3xl font-bold text-gray-800 mb-1">
-              Sign In
-            </h2>
-            <p className="text-gray-500 mb-6">
-              Enter your credentials to continue
-            </p>
 
-            {error && (
-              <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm">
-                {error}
-              </div>
-            )}
+        <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl">
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              
+          <h2 className="text-3xl font-bold mb-2">
+            Sign In
+          </h2>
+
+          <p className="text-gray-400 mb-6">
+            Enter your credentials to continue
+          </p>
+
+          {error && (
+            <div className="bg-red-500/20 text-red-400 p-3 rounded-lg mb-4 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* EMAIL */}
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 focus:border-[#1A9899] focus:ring-2 focus:ring-[#1A9899]/40 outline-none transition"
+              required
+            />
+
+            {/* PASSWORD */}
+            <div className="relative">
               <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
-                required
-              />
-
-              <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 focus:border-[#1A9899] focus:ring-2 focus:ring-[#1A9899]/40 outline-none transition"
                 required
               />
 
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] hover:shadow-lg transition transform disabled:opacity-60"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-sm text-gray-400 hover:text-white"
               >
-                {loading ? "Signing In..." : "Sign In"}
+                {showPassword ? "Hide" : "Show"}
               </button>
+            </div>
 
-            </form>
+            {/* BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#1A9899] hover:bg-[#157c7d] py-3 rounded-xl font-semibold flex justify-center items-center gap-2 transition"
+            >
+              {loading && (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              )}
+              {loading ? "Signing In..." : "Sign In"}
+            </button>
 
-            <p className="text-center text-gray-600 mt-6">
-              Don’t have an account?{" "}
-              <Link
-                to="/"
-                className="text-teal-600 font-semibold hover:underline"
-              >
-                Create Account
-              </Link>
-            </p>
+          </form>
 
-          </div>
+          <p className="text-center text-gray-400 mt-6">
+            Don’t have an account?{" "}
+            <Link to="/" className="text-[#1A9899] font-semibold">
+              Create Account
+            </Link>
+          </p>
+
         </div>
       </div>
     </div>
