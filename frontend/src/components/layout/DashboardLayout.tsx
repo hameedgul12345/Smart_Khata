@@ -53,91 +53,91 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     }
   };
 
-//   const navItems = [
-//   {
-//     to: "/dashboard",
-//     icon: <LayoutDashboard size={18} />,
-//     label: "Overview",
-//   },
+  const navItems = [
+  {
+    to: "/dashboard",
+    icon: <LayoutDashboard size={18} />,
+    label: "Overview",
+  },
 
-//   /* ================= CORE BUSINESS ================= */
-//   {
-//     to: "/dashboard/analytics",
-//     icon: <TrendingUp size={18} />,
-//     label: "Analytics",
-//   },
-//   {
-//     to: "/dashboard/inventory",
-//     icon: <Package size={18} />,
-//     label: "Inventory",
-//   },
-//   {
-//     to: "/dashboard/customers",
-//     icon: <Users size={18} />,
-//     label: "Customers",
-//   },
+  /* ================= CORE BUSINESS ================= */
+  {
+    to: "/dashboard/analytics",
+    icon: <TrendingUp size={18} />,
+    label: "Analytics",
+  },
+  {
+    to: "/dashboard/items",
+    icon: <Package size={18} />,
+    label: "Inventory",
+  },
+  {
+    to: "/dashboard/customers",
+    icon: <Users size={18} />,
+    label: "Customers",
+  },
 
-//   /* ================= FINANCE ================= */
-//   {
-//     to: "/dashboard/payments",
-//     icon: <CreditCard size={18} />,
-//     label: "Payments",
-//   },
-//   {
-//     to: "/dashboard/invoices",
-//     icon: <FileText size={18} />,
-//     label: "Invoices",
-//   },
+  /* ================= FINANCE ================= */
+  // {
+  //   to: "/dashboard/payments",
+  //   icon: <CreditCard size={18} />,
+  //   label: "Payments",
+  // },
+  // {
+  //   to: "/dashboard/invoices",
+  //   icon: <FileText size={18} />,
+  //   label: "Invoices",
+  // },
 
-//   /* ================= BUSINESS CONTROL ================= */
-//   {
-//     to: "/dashboard/reports",
-//     icon: <BarChart3 size={18} />,
-//     label: "Reports",
-//   },
-//   {
-//     to: "/dashboard/ledger",
-//     icon: <BookOpen size={18} />,
-//     label: "Ledger",
-//   },
+  /* ================= BUSINESS CONTROL ================= */
+  // {
+  //   to: "/dashboard/reports",
+  //   icon: <BarChart3 size={18} />,
+  //   label: "Reports",
+  // },
+  // {
+  //   to: "/dashboard/ledger",
+  //   icon: <BookOpen size={18} />,
+  //   label: "Ledger",
+  // },
 
-//   /* ================= SYSTEM ================= */
-//   {
-//     to: "/dashboard/settings",
-//     icon: <Settings size={18} />,
-//     label: "Settings",
-//   },
-//   {
-//     to: "/dashboard/profile",
-//     icon: <User size={18} />,
-//     label: "Profile",
-//   },
-// ];
+  /* ================= SYSTEM ================= */
+  {
+    to: "/dashboard/settings",
+    icon: <Settings size={18} />,
+    label: "Settings",
+  },
+  {
+    to: "/dashboard/profile",
+    icon: <User size={18} />,
+    label: "Profile",
+  },
+];
 
 
 
-const navItems = [
-    {
-      to: "/dashboard",
-      icon: <LayoutDashboard size={18} />,
-      label: "Dashboard",
-    },
-    {
-      to: "/dashboard/items",
-      icon: <Package size={18} />,
-      label: "Items",
-    },
-    {
-      to: "/dashboard/customers",
-      icon: <Users size={18} />,
-      label: "Customers",
-    },
-    {
-      to: "/dashboard/profile",
-      icon: <User size={18} />,
-      label: "Profile",
-    },
-  ];
+// const navItems = [
+//     {
+//       to: "/dashboard",
+//       icon: <LayoutDashboard size={18} />,
+//       label: "Dashboard",
+//     },
+//     {
+//       to: "/dashboard/items",
+//       icon: <Package size={18} />,
+//       label: "Items",
+//     },
+//     {
+//       to: "/dashboard/customers",
+//       icon: <Users size={18} />,
+//       label: "Customers",
+//     },
+//     {
+//       to: "/dashboard/profile",
+//       icon: <User size={18} />,
+//       label: "Profile",
+//     },
+//   ];
 
   const SidebarContent = () => (
     <div className="h-full flex flex-col">

@@ -107,7 +107,7 @@ function ViewBill() {
   /* ================= HEADER ================= */
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("786 Tractor Spare Parts", 14, 15);
+  doc.text(customer.name, 14, 15);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");

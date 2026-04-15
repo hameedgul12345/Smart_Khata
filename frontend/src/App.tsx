@@ -29,6 +29,10 @@ import useGetItems from "./hooks/useGetItems";
 import useGetCustomers from "./hooks/useGetCustomers";
 
 import { Toaster } from "sonner";
+import Analytics from "./pages/dashboard/Analytics";
+import Invoice from "./pages/dashboard/Invoice";
+import Ledger from "./pages/dashboard/Ledger";
+import Setting from "./pages/dashboard/Setting";
 
 // ================= SERVER =================
 // export const serverUrl = "http://localhost:5000";
@@ -130,12 +134,29 @@ function App() {
           element={user ? <Dashboard /> : <Navigate to="/signin" replace />}
         />
         <Route
+          path="/dashboard/analytics"
+          element={user ? <Analytics /> : <Navigate to="/signin" replace />}
+        />
+        <Route
+          path="/dashboard/invoices"
+          element={user ? <Invoice /> : <Navigate to="/signin" replace />}
+        />
+         <Route
+          path="/dashboard/ledger"
+          element={user ? <Ledger /> : <Navigate to="/signin" replace />}
+        />
+        <Route
           path="/dashboard/customers"
           element={user ? <Customers /> : <Navigate to="/signin" replace />}
         />
         <Route
           path="/dashboard/items"
           element={user ? <Items /> : <Navigate to="/signin" replace />}
+        />
+
+         <Route
+          path="/dashboard/settings"
+          element={user ? <Setting /> : <Navigate to="/signin" replace />}
         />
         <Route
           path="/dashboard/view-bill/:id"
