@@ -11,7 +11,6 @@ import {
 } from "../../redux/slices/customersSlices";
 import { toast } from "sonner";
 
-/* SHADCN */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-/* ICONS */
 import { MoreVertical, Trash2, UserPlus, Phone, AlertCircle } from "lucide-react";
 
 /* ================= TYPES ================= */
@@ -47,57 +45,52 @@ const Customers = () => {
   const [due, setDue] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* 🔍 SEARCH + FILTER */
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filter, setFilter] = useState<"ALL" | "DUE" | "CLEAR">("ALL");
 
-  /* ✅ DEBOUNCE LOGIC */
+  /* debounce */
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 300);
-
-    return () => clearTimeout(handler);
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
   }, [search]);
 
-  /* ================= FILTER LOGIC ================= */
   const filteredCustomers = customers.filter((c) => {
-    const matchesSearch = c.name
+    const matchSearch = c.name
       .toLowerCase()
       .includes(debouncedSearch.toLowerCase());
 
-    const matchesFilter =
+    const matchFilter =
       filter === "ALL" ||
       (filter === "DUE" && c.totalAmount > 0) ||
       (filter === "CLEAR" && c.totalAmount === 0);
 
-    return matchesSearch && matchesFilter;
+    return matchSearch && matchFilter;
   });
 
-  const isTyping = search !== debouncedSearch;
-
-  /* ================= FETCH ================= */
+  /* FETCH */
   useEffect(() => {
-    const fetchAllCustomers = async () => {
+    const fetchAll = async () => {
       try {
         setLoading(true);
+
         const res = await axios.get(
           `${serverUrl}/api/customers/get-all-customers`,
           { withCredentials: true }
         );
+
         dispatch(setCustomers(res.data.customers));
-      } catch (err) {
+      } catch {
         toast.error("Failed to fetch customers");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAllCustomers();
+    fetchAll();
   }, [dispatch]);
 
-  /* ================= ADD ================= */
+  /* ADD */
   const addCustomer = async () => {
     if (!name || !phone) {
       toast.error("Name & phone required");
@@ -112,17 +105,17 @@ const Customers = () => {
       );
 
       dispatch(addCustomerRedux(res.data.customer));
-      toast.success("Customer added");
 
       setName("");
       setPhone("");
       setDue("");
-    } catch (err) {
+      toast.success("Customer added");
+    } catch {
       toast.error("Failed to add customer");
     }
   };
 
-  /* ================= DELETE ================= */
+  /* DELETE */
   const deleteCustomer = async (id: string) => {
     try {
       await axios.delete(`${serverUrl}/api/customers/delete/${id}`, {
@@ -130,39 +123,43 @@ const Customers = () => {
       });
 
       dispatch(deleteCustomerRedux(id));
-      toast.success("Customer deleted");
-    } catch (err) {
+      toast.success("Deleted");
+    } catch {
       toast.error("Delete failed");
     }
   };
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
+      <div className="min-h-screen bg-[#050816] text-white p-6 space-y-6">
 
         {/* HEADER */}
         <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-bold">Customers</h2>
+          <h2 className="text-2xl font-bold text-cyan-300">
+            Customers
+          </h2>
 
-          <Button>
+          <Button className="bg-cyan-500 hover:bg-cyan-600 text-white">
             <UserPlus className="mr-2 w-4 h-4" />
             New Customer
           </Button>
         </div>
 
-        {/* ADD CUSTOMER */}
-        <Card>
+        {/* ADD CARD */}
+        <Card className="bg-[#0b1220] border border-white/10 text-white">
           <CardContent className="p-4 grid md:grid-cols-4 gap-3">
             <Input
               placeholder="Customer Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="bg-[#050816] border-white/10 text-white"
             />
 
             <Input
               placeholder="Phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              className="bg-[#050816] border-white/10 text-white"
             />
 
             <Input
@@ -170,57 +167,51 @@ const Customers = () => {
               placeholder="Opening Due"
               value={due}
               onChange={(e) => setDue(e.target.value)}
+              className="bg-[#050816] border-white/10 text-white"
             />
 
-            <Button onClick={addCustomer}>
+            <Button
+              onClick={addCustomer}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600"
+            >
               <UserPlus className="mr-2 w-4 h-4" />
               Add
             </Button>
           </CardContent>
         </Card>
 
-        {/* 🔍 SEARCH + FILTER */}
+        {/* SEARCH + FILTER */}
         <div className="flex flex-col md:flex-row gap-3">
           <Input
             placeholder="Search customers..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            className="bg-[#0b1220] border-white/10 text-white"
           />
 
           <div className="flex gap-2">
-            <Button
-              variant={filter === "ALL" ? "default" : "outline"}
-              onClick={() => setFilter("ALL")}
-            >
-              All
-            </Button>
-
-            <Button
-              variant={filter === "DUE" ? "default" : "outline"}
-              onClick={() => setFilter("DUE")}
-            >
-              Due
-            </Button>
-
-            <Button
-              variant={filter === "CLEAR" ? "default" : "outline"}
-              onClick={() => setFilter("CLEAR")}
-            >
-              Clear
-            </Button>
+            {["ALL", "DUE", "CLEAR"].map((f) => (
+              <Button
+                key={f}
+                variant={filter === f ? "default" : "outline"}
+                onClick={() => setFilter(f as any)}
+                className={
+                  filter === f
+                    ? "bg-cyan-500 text-white"
+                    : "border-white/10 text-slate-300"
+                }
+              >
+                {f}
+              </Button>
+            ))}
           </div>
         </div>
 
-        {/* ✨ TYPING INDICATOR */}
-        {isTyping && (
-          <p className="text-sm text-muted-foreground">Searching...</p>
-        )}
-
         {/* LIST */}
         {loading ? (
-          <p>Loading...</p>
+          <p className="text-slate-400">Loading...</p>
         ) : filteredCustomers.length === 0 ? (
-          <div className="text-center py-10 text-muted-foreground">
+          <div className="text-center py-10 text-slate-400">
             <AlertCircle className="mx-auto mb-2" />
             No customers found
           </div>
@@ -229,20 +220,25 @@ const Customers = () => {
             {filteredCustomers.map((c) => (
               <Card
                 key={c._id}
-                onClick={() => navigate(`/dashboard/customer/${c._id}`)}
-                className="cursor-pointer hover:shadow-lg transition"
+                onClick={() =>
+                  navigate(`/dashboard/customer/${c._id}`)
+                }
+                className="cursor-pointer bg-[#0b1220] border border-white/10 hover:border-cyan-500/40 transition"
               >
                 <CardContent className="p-4 flex justify-between items-center">
 
                   {/* LEFT */}
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-bold">
                       {c.name.charAt(0)}
                     </div>
 
                     <div>
-                      <h3 className="font-semibold">{c.name}</h3>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <h3 className="font-semibold text-white">
+                        {c.name}
+                      </h3>
+
+                      <p className="text-xs text-slate-400 flex items-center gap-1">
                         <Phone className="w-3 h-3" />
                         {c.phone}
                       </p>
@@ -251,29 +247,40 @@ const Customers = () => {
 
                   {/* RIGHT */}
                   <div className="flex items-center gap-2">
+
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Due</p>
-                      <p className={`font-bold ${
-                        c.totalAmount > 0 ? "text-red-600" : "text-green-600"
-                      }`}>
+                      <p className="text-xs text-slate-400">
+                        Due
+                      </p>
+                      <p
+                        className={`font-bold ${
+                          c.totalAmount > 0
+                            ? "text-red-400"
+                            : "text-green-400"
+                        }`}
+                      >
                         Rs {c.totalAmount}
                       </p>
                     </div>
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-slate-400"
+                        >
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
 
-                      <DropdownMenuContent>
+                      <DropdownMenuContent className="bg-[#0b1220] border-white/10 text-white">
                         <DropdownMenuItem
                           onClick={(e) => {
                             e.stopPropagation();
                             deleteCustomer(c._id);
                           }}
-                          className="text-red-600"
+                          className="text-red-400"
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete

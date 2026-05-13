@@ -10,7 +10,12 @@ import { setItems } from "../../redux/slices/itemsSlice";
 /* SHADCN */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 /* ICONS */
@@ -19,6 +24,8 @@ import {
   Search,
   LayoutGrid,
   Table as TableIcon,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 
 /* ================= TYPES ================= */
@@ -36,21 +43,25 @@ const Items = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"grid" | "table">("grid");
+
   const dispatch = useAppDispatch();
 
   const [name, setName] = useState("");
-  const [price, setPrice] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number>(0);
+  const [price, setPrice] = useState<number | "">("");
+  const [quantity, setQuantity] = useState<number | "">("");
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const totalPrice = price * quantity;
+  const totalPrice =
+    (Number(price) || 0) * (Number(quantity) || 0);
 
+  /* FETCH */
   useEffect(() => {
     const fetchProducts = async () => {
       const res = await axios.get(
         `${serverUrl}/api/items/get-items`,
         { withCredentials: true }
       );
+
       setProducts(res.data.items);
       dispatch(setItems(res.data.items));
     };
@@ -58,10 +69,17 @@ const Items = () => {
     fetchProducts();
   }, [dispatch]);
 
+  /* SUBMIT */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const data = { name, price, quantity };
+    if (!name || !price || !quantity) return;
+
+    const data = {
+      name,
+      price: Number(price),
+      quantity: Number(quantity),
+    };
 
     if (editingId) {
       const res = await axios.put(
@@ -71,7 +89,9 @@ const Items = () => {
       );
 
       setProducts((prev) =>
-        prev.map((p) => (p._id === editingId ? res.data.item : p))
+        prev.map((p) =>
+          p._id === editingId ? res.data.item : p
+        )
       );
     } else {
       const res = await axios.post(
@@ -84,13 +104,24 @@ const Items = () => {
     }
 
     setName("");
-    setPrice(0);
-    setQuantity(0);
+    setPrice("");
+    setQuantity("");
     setEditingId(null);
   };
 
+  const handleEdit = (p: Product) => {
+    setEditingId(p._id);
+    setName(p.name);
+    setPrice(p.price);
+    setQuantity(p.quantity);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleDelete = async (id: string) => {
-    await axios.delete(`${serverUrl}/api/items/${id}`);
+    await axios.delete(`${serverUrl}/api/items/${id}`, {
+      withCredentials: true,
+    });
+
     setProducts((prev) => prev.filter((p) => p._id !== id));
   };
 
@@ -100,74 +131,96 @@ const Items = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-8 bg-gray-50 min-h-screen">
+      <div className="min-h-screen bg-[#050816] text-white p-6 space-y-8">
 
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between gap-4">
-          <h2 className="text-3xl font-bold flex items-center gap-2 text-gray-800">
-            <Package className="text-primary" />
-            Inventory
-          </h2>
+
+          <div>
+            <h2 className="text-3xl font-bold flex items-center gap-2">
+              <Package className="text-cyan-400" />
+              Inventory
+            </h2>
+            <p className="text-slate-400 mt-1">
+              Manage your inventory items
+            </p>
+          </div>
 
           <div className="flex gap-2">
             <Button
               variant={view === "grid" ? "default" : "outline"}
               onClick={() => setView("grid")}
             >
-              <LayoutGrid className="w-4 h-4 mr-1" /> Grid
+              <LayoutGrid className="w-4 h-4 mr-2" />
+              Grid
             </Button>
 
             <Button
               variant={view === "table" ? "default" : "outline"}
               onClick={() => setView("table")}
             >
-              <TableIcon className="w-4 h-4 mr-1" /> Table
+              <TableIcon className="w-4 h-4 mr-2" />
+              Table
             </Button>
           </div>
         </div>
 
         {/* SEARCH */}
         <div className="relative max-w-md">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+
           <Input
             placeholder="Search items..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 shadow-sm"
+            className="pl-10 bg-[#0b1220] border-white/10 text-white"
           />
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
         </div>
 
         {/* FORM */}
-        <Card className="shadow-md border-0">
+        <Card className="bg-[#0b1220] border-white/10 text-white">
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="text-white">
               {editingId ? "Update Item" : "Add New Item"}
             </CardTitle>
           </CardHeader>
 
           <CardContent>
-            <form
-              onSubmit={handleSubmit}
-              className="grid md:grid-cols-5 gap-4"
-            >
+            <form className="grid md:grid-cols-5 gap-4" onSubmit={handleSubmit}>
+
               <Input
                 placeholder="Item name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                className="bg-[#050816] border-white/10 text-white"
               />
+
               <Input
                 type="number"
                 placeholder="Price"
                 value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
+                onChange={(e) =>
+                  setPrice(e.target.value === "" ? "" : Number(e.target.value))
+                }
+                className="bg-[#050816] border-white/10 text-white"
               />
+
               <Input
                 type="number"
                 placeholder="Quantity"
                 value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
+                onChange={(e) =>
+                  setQuantity(e.target.value === "" ? "" : Number(e.target.value))
+                }
+                className="bg-[#050816] border-white/10 text-white"
               />
-              <Input value={totalPrice} readOnly />
+
+              <Input
+                value={`Rs ${totalPrice}`}
+                readOnly
+                className="bg-[#0b1220] border-white/10 text-slate-300"
+              />
+
               <Button type="submit">
                 {editingId ? "Update" : "Add"}
               </Button>
@@ -175,145 +228,115 @@ const Items = () => {
           </CardContent>
         </Card>
 
-        {/* GRID VIEW */}
+        {/* GRID */}
         {view === "grid" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
             {filteredProducts.map((p) => (
               <Card
                 key={p._id}
-                className={`transition shadow-md border-0 ${
-                  p.quantity < 5 ? "border border-red-300" : ""
-                }`}
+                className="bg-[#0b1220] border-white/10 text-white hover:border-cyan-500/30 transition"
               >
-                <CardContent className="p-4 space-y-3">
-                  <h3 className="font-semibold text-gray-800">{p.name}</h3>
+                <CardContent className="p-5 space-y-4">
 
-                  <div className="text-sm text-gray-600 flex justify-between">
-                    <span>Price</span>
-                    <span>Rs {p.price}</span>
+                  <div className="flex justify-between">
+                    <h3 className="font-semibold">{p.name}</h3>
+
+                    <Badge>
+                      {p.stockStatus}
+                    </Badge>
                   </div>
 
-                  <div className="text-sm flex justify-between">
-                    <span>Qty</span>
-                    <span
-                      className={
-                        p.quantity < 5 ? "text-red-500 font-bold" : ""
-                      }
-                    >
-                      {p.quantity}
-                    </span>
-                  </div>
+                  <p className="text-slate-400">
+                    Price: Rs {p.price}
+                  </p>
 
-                  <div className="flex justify-between pt-2 border-t">
-                    <span>Total</span>
-                    <span className="font-bold text-primary">
-                      Rs {p.totalPrice}
-                    </span>
-                  </div>
+                  <p className={p.quantity < 5 ? "text-red-400" : "text-slate-300"}>
+                    Qty: {p.quantity}
+                  </p>
 
-                  <Badge
-                    variant={
-                      p.stockStatus === "OUT_OF_STOCK"
-                        ? "destructive"
-                        : "default"
-                    }
-                  >
-                    {p.stockStatus}
-                  </Badge>
+                  <p className="font-bold text-cyan-400">
+                    Total: Rs {p.totalPrice}
+                  </p>
 
-                  <div className="flex justify-between gap-2 pt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setEditingId(p._id)}
-                    >
-                      Edit
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => handleEdit(p)}>
+                      <Pencil size={14} /> Edit
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(p._id)}
-                    >
-                      Delete
+
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(p._id)}>
+                      <Trash2 size={14} /> Delete
                     </Button>
                   </div>
+
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
 
-        {/* TABLE VIEW */}
+        {/* TABLE */}
         {view === "table" && (
-          <div className="bg-white rounded-xl shadow overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100 text-gray-600">
+          <div className="overflow-x-auto rounded-xl border border-white/10">
+
+            <table className="w-full text-sm bg-[#0b1220] text-white">
+
+              <thead className="text-slate-300">
                 <tr>
-                  <th className="p-3 text-left">Name</th>
+                  <th className="p-4 text-left">Name</th>
                   <th>Price</th>
                   <th>Qty</th>
                   <th>Total</th>
                   <th>Status</th>
-                  <th></th>
+                  <th className="text-right p-4">Actions</th>
                 </tr>
               </thead>
 
               <tbody>
+
                 {filteredProducts.map((p) => (
-                  <tr
-                    key={p._id}
-                    className="border-t hover:bg-gray-50"
-                  >
-                    <td className="p-3">{p.name}</td>
-                    <td>Rs {p.price}</td>
-                    <td
-                      className={
-                        p.quantity < 5 ? "text-red-500 font-bold" : ""
-                      }
-                    >
+                  <tr key={p._id} className="border-t border-white/10 hover:bg-white/5">
+
+                    <td className="p-4">{p.name}</td>
+                    <td className="text-center">Rs {p.price}</td>
+                    <td className={`text-center ${p.quantity < 5 ? "text-red-400" : ""}`}>
                       {p.quantity}
                     </td>
-                    <td>Rs {p.totalPrice}</td>
-                    <td>
-                      <Badge
-                        variant={
-                          p.stockStatus === "OUT_OF_STOCK"
-                            ? "destructive"
-                            : "default"
-                        }
-                      >
-                        {p.stockStatus}
-                      </Badge>
+                    <td className="text-center text-cyan-400">
+                      Rs {p.totalPrice}
                     </td>
-                    <td className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => setEditingId(p._id)}
-                      >
+
+                    <td className="text-center">
+                      <Badge>{p.stockStatus}</Badge>
+                    </td>
+
+                    <td className="text-right p-4 flex justify-end gap-2">
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(p)}>
                         Edit
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDelete(p._id)}
-                      >
+
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(p._id)}>
                         Delete
                       </Button>
                     </td>
+
                   </tr>
                 ))}
+
               </tbody>
             </table>
+
           </div>
         )}
 
         {/* EMPTY */}
         {filteredProducts.length === 0 && (
-          <div className="text-center py-10 text-gray-400">
-            <Package className="mx-auto mb-3 w-10 h-10 opacity-50" />
+          <div className="text-center py-20 text-slate-400">
+            <Package className="mx-auto mb-4 w-12 h-12 opacity-40" />
             No items found
           </div>
         )}
+
       </div>
     </DashboardLayout>
   );

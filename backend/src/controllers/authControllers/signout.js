@@ -7,6 +7,7 @@ const signout = (req, res) => {
       sameSite: "none",
       path: "/",
     });
+    
 
     res.status(200).json({
       success: true,
