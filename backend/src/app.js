@@ -138,6 +138,7 @@ app.get("/", (req, res) => {
 });
 
 
+
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/user", userRoutes);

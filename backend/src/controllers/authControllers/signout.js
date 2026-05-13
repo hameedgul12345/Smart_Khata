@@ -1,6 +1,12 @@
+
 const signout = (req, res) => {
   try {
-    res.clearCookie("token"); // same name as your login cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
 
     res.status(200).json({
       success: true,
